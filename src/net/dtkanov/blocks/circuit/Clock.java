@@ -58,8 +58,8 @@ public class Clock {
 						if (alive) {
 							state = !state;
 							for (AddrPair sink : dst) {
-								sink.node.in(sink.port, state);
-								sink.node.propagate();
+								sink.getNode().in(sink.getPort(), state);
+								sink.getNode().propagate();
 							}
 						}
 					}

@@ -34,8 +34,8 @@ public class Wire {
 		for (Entry<AddrPair, Integer> data : out_node.entrySet()) {
 			int port = data.getValue();
 			AddrPair addr = data.getKey();
-			addr.node.in(addr.port, in_node.out(port));
-			addr.node.propagate();
+			addr.getNode().in(addr.getPort(), in_node.out(port));
+			addr.getNode().propagate();
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class Wire {
 		for (Entry<AddrPair, Integer> data : out_node.entrySet()) {
 			int port = data.getValue();
 			AddrPair addr = data.getKey();
-			str.append("("+port+") -> " + addr.node + "("+addr.port+")"+System.getProperty("line.separator"));
+			str.append("("+port+") -> " + addr.getNode() + "("+addr.getPort()+")"+System.getProperty("line.separator"));
 		}
 		return str.toString();
 	}
@@ -52,7 +52,7 @@ public class Wire {
 	public String toStringDeep() {
 		StringBuilder str = new StringBuilder(toString());
 		for (AddrPair addr : out_node.keySet())
-			str.append(addr.node.toStringDeep()+System.getProperty("line.separator"));
+			str.append(addr.getNode().toStringDeep()+System.getProperty("line.separator"));
 		return str.toString();
 	}
 }
