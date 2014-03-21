@@ -165,5 +165,59 @@ public class CircuitsTest {
 			assertFalse(reg.out(i));
 		}
 	}
+	
+	@Test
+	public void MultiANDTest() {
+		int num_bits = 4;
+		Node reg = new MultiAND(num_bits);
+		ConstantNode in1[] = new ConstantNode[num_bits];
+		ConstantNode in2[] = new ConstantNode[num_bits];
+		for (int i = 0; i < num_bits; i++) {
+			in1[i] = new ConstantNode(true);
+			in1[i].connectDst(0, reg, i);
+			in2[i] = new ConstantNode(true);
+			in2[i].connectDst(1, reg, i+num_bits);
+		}
+		
+		for (int i = 0; i < num_bits; i++) {
+			in1[i].propagate();
+			in2[i].propagate();
+		}
+		for (int i = 0; i < num_bits; i++) {
+			assertTrue(reg.out(i));
+		}
+		
+		in1[0].setValue(false);
+		for (int i = 0; i < num_bits; i++) {
+			in1[i].propagate();
+			in2[i].propagate();
+		}
+		assertFalse(reg.out(0));
+		for (int i = 1; i < num_bits; i++) {
+			assertTrue(reg.out(i));
+		}
+		
+		in2[1].setValue(false);
+		for (int i = 0; i < num_bits; i++) {
+			in1[i].propagate();
+			in2[i].propagate();
+		}
+		assertFalse(reg.out(0));
+		assertFalse(reg.out(1));
+		for (int i = 2; i < num_bits; i++) {
+			assertTrue(reg.out(i));
+		}
+		
+		in1[0].setValue(true);
+		for (int i = 0; i < num_bits; i++) {
+			in1[i].propagate();
+			in2[i].propagate();
+		}
+		assertTrue(reg.out(0));
+		assertFalse(reg.out(1));
+		for (int i = 2; i < num_bits; i++) {
+			assertTrue(reg.out(i));
+		}
+	}
 
 }
