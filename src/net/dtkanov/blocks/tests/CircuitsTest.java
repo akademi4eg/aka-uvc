@@ -118,5 +118,52 @@ public class CircuitsTest {
 		control.propagate();
 		assertTrue(mux.out(0));
 	}
+	
+	@Test
+	public void MultiNOTTest() {
+		int num_bits = 4;
+		Node reg = new MultiNOT(num_bits);
+		ConstantNode in[] = new ConstantNode[num_bits];
+		for (int i = 0; i < num_bits; i++) {
+			in[i] = new ConstantNode(true);
+			in[i].connectDst(0, reg, i);
+		}
+		
+		for (int i = 0; i < num_bits; i++) {
+			in[i].propagate();
+		}
+		for (int i = 0; i < num_bits; i++) {
+			assertFalse(reg.out(i));
+		}
+		
+		in[0].setValue(false);
+		for (int i = 0; i < num_bits; i++) {
+			in[i].propagate();
+		}
+		assertTrue(reg.out(0));
+		for (int i = 1; i < num_bits; i++) {
+			assertFalse(reg.out(i));
+		}
+		
+		in[1].setValue(false);
+		for (int i = 0; i < num_bits; i++) {
+			in[i].propagate();
+		}
+		assertTrue(reg.out(0));
+		assertTrue(reg.out(1));
+		for (int i = 2; i < num_bits; i++) {
+			assertFalse(reg.out(i));
+		}
+		
+		in[0].setValue(true);
+		for (int i = 0; i < num_bits; i++) {
+			in[i].propagate();
+		}
+		assertFalse(reg.out(0));
+		assertTrue(reg.out(1));
+		for (int i = 2; i < num_bits; i++) {
+			assertFalse(reg.out(i));
+		}
+	}
 
 }

@@ -7,37 +7,55 @@ import java.util.concurrent.TimeUnit;
 
 import net.dtkanov.blocks.logic.AddrPair;
 
+/**
+ * Describes clocking device. Changes state with appr. given frequency.
+ * @author akademi4eg
+ *
+ */
 public class Clock {
 	public static long DEFAULT_FREQUENCY = 3;
 	
+	/** Frequency in Hertz. */
 	private long freq;
+	/** Step in microseconds. */
 	private long step;
 	private boolean state;
+	/** List of destination nodes. */
 	private List<AddrPair> dst = new LinkedList<AddrPair>();
 	private boolean alive;
 	
+	/** Constructs clocking object. */
 	public Clock() {
 		this(DEFAULT_FREQUENCY);
 	}
 	
+	/**
+	 * Constructs clocking object.
+	 * @param frequency in Hertz
+	 */
 	public Clock(long frequency) {
 		freq = frequency;
 		step = 1000000/freq;
 		state = false;
 	}
 	
+	/**
+	 * Adds destination node for this device.
+	 * @param sink destination node
+	 * @return pointer to this device
+	 */
 	public Clock addSink(AddrPair sink) {
 		dst.add(sink);
 		return this;
 	}
 	
+	/** Starts clocking. */
 	public void start() {
 		alive = true;
 		Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
 				new Runnable() {
 					public void run() {
 						if (alive) {
-							System.out.println("---Tick---");
 							state = !state;
 							for (AddrPair sink : dst) {
 								sink.node.in(sink.port, state);
@@ -48,6 +66,7 @@ public class Clock {
 				}, 0, step, TimeUnit.MICROSECONDS);
 	}
 	
+	/** Stops clocking after next cycle. */
 	public void stop() {
 		alive = false;
 	}
