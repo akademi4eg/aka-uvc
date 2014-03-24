@@ -1,15 +1,13 @@
 package net.dtkanov.blocks.logic;
-
+/** Class describing NOT operation. */
 public class NOTNode extends Node {
+	/** Is input received? */
 	protected boolean state = false;
+	/** Received input. */
 	protected boolean data = false;
-	
+	/** Constructs NOT node without and connections. */
 	public NOTNode() {
-		this(null);
-	}
-	
-	public NOTNode(Wire out) {
-		super(out);
+		super(null);
 	}
 	
 	@Override
@@ -20,10 +18,8 @@ public class NOTNode extends Node {
 	@Override
 	public Node in(int index, boolean value) {
 		propagate();
-		if (index == 0) {
-			data = value;
-			state = true;
-		}
+		data = value;
+		state = true;
 		return this;
 	}
 

@@ -1,17 +1,15 @@
 package net.dtkanov.blocks.logic;
-
+/** AND logic gate */
 public class ANDNode extends Node {
+	/** Is input received? */
 	protected boolean state[];
+	/** Received input. */
 	protected boolean data[] = new boolean[2];
-	
+	/** Constructs AND node without and connections. */
 	public ANDNode() {
-		this(null);
+		super(null);
 	}
-	
-	public ANDNode(Wire out) {
-		super(out);
-	}
-	
+
 	public void reset() {
 		if (state == null)
 			state = new boolean[2];
@@ -19,6 +17,9 @@ public class ANDNode extends Node {
 		state[1] = false;
 	}
 
+	/**
+	 * @param index of the input, supports only 0 or 1
+	 */
 	@Override
 	public Node in(int index, boolean value) {
 		propagate();
