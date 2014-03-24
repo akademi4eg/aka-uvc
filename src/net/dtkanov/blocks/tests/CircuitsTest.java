@@ -393,5 +393,34 @@ public class CircuitsTest {
 		assertFalse(add.out(0));
 		assertTrue(add.out(1));
 	}
+	
+	@Test
+	public void HalfAdderTest() {
+		ConstantNode in1 = new ConstantNode(true);
+		ConstantNode cin = new ConstantNode(true);
+		Node add = new HalfAdder();
+		add.connectSrc(in1, 0, 0)
+		   .connectSrc(cin, 0, 1);
+		
+		in1.propagate();
+		cin.propagate();
+		assertFalse(add.out(0));
+		assertTrue(add.out(1));
+		
+		in1.setValue(false).propagate();
+		cin.propagate();
+		assertTrue(add.out(0));
+		assertFalse(add.out(1));
+		
+		in1.setValue(false).propagate();
+		cin.setValue(false).propagate();
+		assertFalse(add.out(0));
+		assertFalse(add.out(1));
+		
+		in1.setValue(true).propagate();
+		cin.setValue(false).propagate();
+		assertTrue(add.out(0));
+		assertFalse(add.out(1));
+	}
 
 }
