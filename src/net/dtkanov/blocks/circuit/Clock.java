@@ -17,7 +17,7 @@ public class Clock {
 	
 	/** Frequency in Hertz. */
 	private long freq;
-	/** Step in microseconds. */
+	/** Step in nanoseconds. */
 	private long step;
 	private boolean state;
 	/** List of destination nodes. */
@@ -35,7 +35,7 @@ public class Clock {
 	 */
 	public Clock(long frequency) {
 		freq = frequency;
-		step = 1000000/freq;
+		step = 1000000000/freq;
 		state = false;
 	}
 	
@@ -63,7 +63,7 @@ public class Clock {
 							}
 						}
 					}
-				}, 0, step, TimeUnit.MICROSECONDS);
+				}, 0, step, TimeUnit.NANOSECONDS);
 	}
 	
 	/** Stops clocking after next cycle. */
