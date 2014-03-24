@@ -346,5 +346,52 @@ public class CircuitsTest {
 			assertFalse(reg.out(i));
 		}
 	}
+	
+	@Test
+	public void AdderTest() {
+		ConstantNode in1 = new ConstantNode(true);
+		ConstantNode in2 = new ConstantNode(true);
+		ConstantNode cin = new ConstantNode(true);
+		Node add = new Adder();
+		add.connectSrc(in1, 0, 0)
+		   .connectSrc(in2, 0, 1)
+		   .connectSrc(cin, 0, 2);
+		
+		in1.propagate();
+		in2.propagate();
+		cin.propagate();
+		assertTrue(add.out(0));
+		assertTrue(add.out(1));
+		
+		in1.propagate();
+		in2.setValue(false).propagate();
+		cin.propagate();
+		assertFalse(add.out(0));
+		assertTrue(add.out(1));
+		
+		in1.setValue(false).propagate();
+		in2.setValue(false).propagate();
+		cin.propagate();
+		assertTrue(add.out(0));
+		assertFalse(add.out(1));
+		
+		in1.setValue(false).propagate();
+		in2.setValue(false).propagate();
+		cin.setValue(false).propagate();
+		assertFalse(add.out(0));
+		assertFalse(add.out(1));
+		
+		in1.setValue(true).propagate();
+		in2.setValue(false).propagate();
+		cin.setValue(false).propagate();
+		assertTrue(add.out(0));
+		assertFalse(add.out(1));
+		
+		in1.setValue(true).propagate();
+		in2.setValue(true).propagate();
+		cin.setValue(false).propagate();
+		assertFalse(add.out(0));
+		assertTrue(add.out(1));
+	}
 
 }
