@@ -2,6 +2,7 @@ package net.dtkanov.blocks.tests;
 
 import static org.junit.Assert.*;
 
+import net.dtkanov.blocks.circuit.high_level.Incrementer;
 import net.dtkanov.blocks.circuit.high_level.MultiAdder;
 import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.ConstantNode;
@@ -125,5 +126,57 @@ public class HighLevelCircuitsTest {
 		assertTrue(add.out(2)==false);
 		assertTrue(add.out(3)==true);
 		assertTrue(add.out(4)==false);
+	}
+	
+	@Test
+	public void IncrementerTest() {
+		int num_bits = 4;
+		Node reg = new Register(num_bits);
+		Node add = new Incrementer(num_bits);
+		for (int i = 0; i < num_bits; i++) {
+			add.connectSrc(reg, i, i);
+		}
+		
+		// 10 == 1010b
+		reg.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		reg.propagate();
+		// 11 == (0)1011b
+		assertTrue(add.out(0)==true);
+		assertTrue(add.out(1)==true);
+		assertTrue(add.out(2)==false);
+		assertTrue(add.out(3)==true);
+		assertTrue(add.out(4)==false);
+		
+		// 3 == 0011b
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		reg.propagate();
+		// 4 == (0)0100b
+		assertTrue(add.out(0)==false);
+		assertTrue(add.out(1)==false);
+		assertTrue(add.out(2)==true);
+		assertTrue(add.out(3)==false);
+		assertTrue(add.out(4)==false);
+		
+		// 15 == 1111b
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, true)
+		   .in(3, true)
+		   .in(4, true);
+		reg.propagate();
+		// 16 == (1)0000b
+		assertTrue(add.out(0)==false);
+		assertTrue(add.out(1)==false);
+		assertTrue(add.out(2)==false);
+		assertTrue(add.out(3)==false);
+		assertTrue(add.out(4)==true);
 	}
 }
