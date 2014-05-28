@@ -31,6 +31,10 @@ public class MultiAdder extends Node {
 		}
 	}
 	
+	public int getBitness() {
+		return bitness;
+	}
+	
 	@Override
 	public Node in(int index, boolean value) {
 		in_nops[index].in(0, value);

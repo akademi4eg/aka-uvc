@@ -2,6 +2,7 @@ package net.dtkanov.blocks.tests;
 
 import static org.junit.Assert.*;
 
+import net.dtkanov.blocks.circuit.high_level.Complementer;
 import net.dtkanov.blocks.circuit.high_level.Incrementer;
 import net.dtkanov.blocks.circuit.high_level.MultiAdder;
 import net.dtkanov.blocks.circuit.high_level.Register;
@@ -178,5 +179,41 @@ public class HighLevelCircuitsTest {
 		assertTrue(add.out(2)==false);
 		assertTrue(add.out(3)==false);
 		assertTrue(add.out(4)==true);
+	}
+	
+	@Test
+	public void ComplementerTest() {
+		int num_bits = 4;
+		Node reg = new Register(num_bits);
+		Node add = new Complementer(num_bits);
+		for (int i = 0; i < num_bits; i++) {
+			add.connectSrc(reg, i, i);
+		}
+		
+		// -6 == 1010b
+		reg.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		reg.propagate();
+		// 6 == 0110b
+		assertTrue(add.out(0)==false);
+		assertTrue(add.out(1)==true);
+		assertTrue(add.out(2)==true);
+		assertTrue(add.out(3)==false);
+		
+		// 3 == 0011b
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		reg.propagate();
+		// -3 == 1101b
+		assertTrue(add.out(0)==true);
+		assertTrue(add.out(1)==false);
+		assertTrue(add.out(2)==true);
+		assertTrue(add.out(3)==true);
 	}
 }
