@@ -4,15 +4,17 @@ import net.dtkanov.blocks.logic.ANDNode;
 import net.dtkanov.blocks.logic.NOTNode;
 import net.dtkanov.blocks.logic.Node;
 import net.dtkanov.blocks.logic.Wire;
-
+/** Implements NOT-OR operation. */
 public class NORNode extends Node {
+	/** Input nodes. */
 	private Node inNOT[];
+	/** Output node. */
 	private Node outAND = new ANDNode();
-	
+	/** Constructs a NOT-OR node. */
 	public NORNode() {
 		this(null);
 	}
-	
+	/** Constructs a NOT-OR node with provided Wire. */
 	public NORNode(Wire out) {
 		super(out);
 		inNOT[0] = new NOTNode().connectDst(0, outAND, 0);
