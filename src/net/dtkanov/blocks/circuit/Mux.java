@@ -6,11 +6,15 @@ import net.dtkanov.blocks.logic.NOTNode;
 import net.dtkanov.blocks.logic.Node;
 import net.dtkanov.blocks.logic.Wire;
 import net.dtkanov.blocks.logic.derived.ORNode;
-
+/** 2-to-1 multiplexer. */
 public class Mux extends Node {
+	/** Inputs. */
 	private Node inNOP[];
+	/** Part of control. */
 	private Node csNOP;
+	/** Part of control. */
 	private Node csNOT;
+	/** Outputs. */
 	private Node outOR = new ORNode();
 	
 	public Mux() {
@@ -27,7 +31,9 @@ public class Mux extends Node {
 		and_nodes[1].connectSrc(inNOP[1], 0, 0)
 					.connectSrc(csNOT, 0, 1);
 	}
-	
+	/**
+	 * Set index==2 for control signal. Control==1 outputs value of index==0.
+	 */
 	@Override
 	public Node in(int index, boolean value) {
 		if (index == 2) {
