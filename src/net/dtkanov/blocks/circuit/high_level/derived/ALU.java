@@ -1,6 +1,8 @@
 package net.dtkanov.blocks.circuit.high_level.derived;
 
-import net.dtkanov.blocks.circuit.Mux;
+import net.dtkanov.blocks.circuit.MultiAND;
+import net.dtkanov.blocks.circuit.MultiOR;
+import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
 /** Implements 2 operands arithmetic-logic unit. */
@@ -13,6 +15,9 @@ public class ALU extends Node {
 	protected Node inNOPs_B[];
 	protected Node opNOPs[];
 	protected Node outMUXs[];
+	// operations
+	protected Node opAND;
+	protected Node opOR;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -27,14 +32,44 @@ public class ALU extends Node {
 		for (int i = 0; i < NUM_CMD_BITS; i++) {
 			opNOPs[i] = new NOPNode();
 		}
-		outMUXs = new Mux[(1<<NUM_CMD_BITS) - 1];
-		outMUXs[0] = new Mux();
+		outMUXs = new MultiMux[(1<<NUM_CMD_BITS) - 1];
+		outMUXs[0] = new MultiMux(bitness);
+		outMUXs[0].connectSrc(opNOPs[0], 0, 2*bitness);
 		for (int i = 1; i < outMUXs.length; i++) {
-			outMUXs[i] = new Mux();
+			outMUXs[i] = new MultiMux(bitness);
 			// heap-like organization of indexes
-			outMUXs[i/2].connectSrc(outMUXs[i], 0, i%2);
+			for (int j = 0; j < bitness; j++) {
+				outMUXs[i/2].connectSrc(outMUXs[i], j, j + (i%2)*bitness);
+			}
+			// Adding small magic number to prevent rounding errors.
+			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
+			outMUXs[i].connectSrc(opNOPs[level], 0, 2*bitness);
 		}
-		// TODO connect muxs
+		initOperations();
+	}
+	
+	protected void initOperations() {
+		opOR = new MultiOR(bitness);
+		for (int j = 0; j < bitness; j++) {
+			opOR.connectSrc(inNOPs_A[j], 0, j);
+			opOR.connectSrc(inNOPs_B[j], 0, j+bitness);
+			// 0000
+			opOR.connectDst(j, outMUXs[outMUXs.length/2], j);
+		}
+		opAND = new MultiAND(bitness);
+		for (int j = 0; j < bitness; j++) {
+			opAND.connectSrc(inNOPs_A[j], 0, j);
+			opAND.connectSrc(inNOPs_B[j], 0, j+bitness);
+			// 0001
+			opAND.connectDst(j, outMUXs[outMUXs.length/2], j+bitness);
+		}
+		// TODO connect operations, remove this stub
+		for (int i = 1; i < 1<<(NUM_CMD_BITS-1); i++) {
+			for (int j = 0; j < bitness; j++) {
+				outMUXs[i+outMUXs.length/2].connectSrc(inNOPs_A[i], 0, j);
+				outMUXs[i+outMUXs.length/2].connectSrc(inNOPs_B[i], 0, j + bitness);
+			}
+		}
 	}
 
 	@Override
@@ -51,8 +86,7 @@ public class ALU extends Node {
 
 	@Override
 	public boolean out(int index) {
-		// TODO Auto-generated method stub
-		return false;
+		return outMUXs[0].out(index);
 	}
 
 	@Override
@@ -70,12 +104,16 @@ public class ALU extends Node {
 
 	@Override
 	public void reset() {
-		for (int i = 0; i < bitness; i++) {
-			inNOPs_A[i].reset();
-			inNOPs_B[i].reset();
+		if (inNOPs_A != null) {
+			for (int i = 0; i < bitness; i++) {
+				inNOPs_A[i].reset();
+				inNOPs_B[i].reset();
+			}
 		}
-		for (int i = 0; i < NUM_CMD_BITS; i++) {
-			opNOPs[i].reset();
+		if (opNOPs != null) {
+			for (int i = 0; i < NUM_CMD_BITS; i++) {
+				opNOPs[i].reset();
+			}
 		}
 	}
 
@@ -90,7 +128,6 @@ public class ALU extends Node {
 		for (int i = 0; i < NUM_CMD_BITS; i++) {
 			opNOPs[i].propagate();
 		}
-		// TODO finish implementation
 		super.propagate(true);
 	}
 }

@@ -33,7 +33,7 @@ public class HighLevelCircuitsTest {
 
 		in[num_bits].setValue(false);
 		for (int i = 0; i <= num_bits; i++) {
-			in[i].propagate();
+			in[i].propagate(true);
 		}
 		for (int i = 0; i < num_bits; i++) {
 			assertTrue(reg.out(i));
@@ -41,7 +41,7 @@ public class HighLevelCircuitsTest {
 		
 		in[0].setValue(false);
 		for (int i = 0; i <= num_bits; i++) {
-			in[i].propagate();
+			in[i].propagate(true);
 		}
 		assertTrue(reg.out(0));
 		assertTrue(reg.out(1));
@@ -52,7 +52,7 @@ public class HighLevelCircuitsTest {
 		in[1].setValue(false);
 		in[num_bits].setValue(true);
 		for (int i = 0; i <= num_bits; i++) {
-			in[i].propagate();
+			in[i].propagate(true);
 		}
 		assertFalse(reg.out(0));
 		assertFalse(reg.out(1));
@@ -62,7 +62,7 @@ public class HighLevelCircuitsTest {
 		
 		in[0].setValue(true);
 		for (int i = 0; i <= num_bits; i++) {
-			in[i].propagate();
+			in[i].propagate(true);
 		}
 		assertTrue(reg.out(0));
 		assertFalse(reg.out(1));
@@ -220,7 +220,6 @@ public class HighLevelCircuitsTest {
 	
 	@Test
 	public void MultiMuxTest() {
-		// TODO find a bug
 		int num_bits = 4;
 		Node in1 = new Register(num_bits);
 		Node in2 = new Register(num_bits);
@@ -245,36 +244,40 @@ public class HighLevelCircuitsTest {
 		   .in(3, true)
 		   .in(4, true);
 		
-		in1.propagate();
-		in2.propagate();
-		control.propagate();
+		in1.propagate(true);
+		in2.propagate(true);
+		control.propagate(true);
 		// 3 == 0011b
 		assertTrue(mux.out(0)==true);
 		assertTrue(mux.out(1)==true);
 		assertTrue(mux.out(2)==false);
 		assertTrue(mux.out(3)==false);
 		
-		in1.propagate();
-		in2.propagate();
-		control.propagate();
+		in1.propagate(true);
+		in2.propagate(true);
+		control.propagate(true);
 		// 3 == 0011b
 		assertTrue(mux.out(0)==true);
 		assertTrue(mux.out(1)==true);
 		assertTrue(mux.out(2)==false);
 		assertTrue(mux.out(3)==false);
 		
-		in1.propagate();
-		in2.propagate();
-		control.setValue(false).propagate();
+		in1.propagate(true);
+		in2.propagate(true);
+		control.setValue(false).propagate(true);
 		// -6 == 1010b
 		assertTrue(mux.out(0)==false);
 		assertTrue(mux.out(1)==true);
 		assertTrue(mux.out(2)==false);
 		assertTrue(mux.out(3)==true);
 		
-		in1.propagate();
-		in2.in(3, false).propagate();
-		control.propagate();
+		in1.propagate(true);
+		in2.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true).propagate(true);
+		control.propagate(true);
 		// 2 == 0010b
 		assertTrue(mux.out(0)==false);
 		assertTrue(mux.out(1)==true);
