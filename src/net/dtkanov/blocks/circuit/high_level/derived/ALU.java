@@ -1,7 +1,9 @@
 package net.dtkanov.blocks.circuit.high_level.derived;
 
 import net.dtkanov.blocks.circuit.MultiAND;
+import net.dtkanov.blocks.circuit.MultiNOT;
 import net.dtkanov.blocks.circuit.MultiOR;
+import net.dtkanov.blocks.circuit.MultiXOR;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
@@ -18,6 +20,8 @@ public class ALU extends Node {
 	// operations
 	protected Node opAND;
 	protected Node opOR;
+	protected Node opXOR;
+	protected Node opNOT;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -39,7 +43,7 @@ public class ALU extends Node {
 			outMUXs[i] = new MultiMux(bitness);
 			// heap-like organization of indexes
 			for (int j = 0; j < bitness; j++) {
-				outMUXs[i/2].connectSrc(outMUXs[i], j, j + (i%2)*bitness);
+				outMUXs[(i-1)/2].connectSrc(outMUXs[i], j, j + ((i+1)%2)*bitness);
 			}
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
@@ -49,36 +53,49 @@ public class ALU extends Node {
 	}
 	
 	protected void initOperations() {
-		opOR = new MultiOR(bitness);
-		for (int j = 0; j < bitness; j++) {
-			opOR.connectSrc(inNOPs_A[j], 0, j);
-			opOR.connectSrc(inNOPs_B[j], 0, j+bitness);
-			// 0000
-			opOR.connectDst(j, outMUXs[outMUXs.length/2], j);
-		}
 		opAND = new MultiAND(bitness);
 		for (int j = 0; j < bitness; j++) {
 			opAND.connectSrc(inNOPs_A[j], 0, j);
 			opAND.connectSrc(inNOPs_B[j], 0, j+bitness);
+			// 0000
+			opAND.connectDst(j, outMUXs[outMUXs.length-1], j+bitness);
+		}
+		opOR = new MultiOR(bitness);
+		for (int j = 0; j < bitness; j++) {
+			opOR.connectSrc(inNOPs_A[j], 0, j);
+			opOR.connectSrc(inNOPs_B[j], 0, j+bitness);
 			// 0001
-			opAND.connectDst(j, outMUXs[outMUXs.length/2], j+bitness);
+			opOR.connectDst(j, outMUXs[outMUXs.length-1], j);
+		}
+		opXOR = new MultiXOR(bitness);
+		for (int j = 0; j < bitness; j++) {
+			opXOR.connectSrc(inNOPs_A[j], 0, j);
+			opXOR.connectSrc(inNOPs_B[j], 0, j+bitness);
+			// 0010
+			opXOR.connectDst(j, outMUXs[outMUXs.length-2], j+bitness);
+		}
+		opNOT = new MultiNOT(bitness);
+		for (int j = 0; j < bitness; j++) {
+			opNOT.connectSrc(inNOPs_A[j], 0, j);
+			// 0011
+			opNOT.connectDst(j, outMUXs[outMUXs.length-2], j);
 		}
 		// TODO connect operations, remove this stub
-		for (int i = 1; i < 1<<(NUM_CMD_BITS-1); i++) {
+		for (int i = outMUXs.length-3; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
-				outMUXs[i+outMUXs.length/2].connectSrc(inNOPs_A[i], 0, j);
-				outMUXs[i+outMUXs.length/2].connectSrc(inNOPs_B[i], 0, j + bitness);
+				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
+				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);
 			}
 		}
 	}
 
 	@Override
 	public Node in(int index, boolean value) {
-		if (index < bitness) {
+		if (index < bitness) {// first operand
 			inNOPs_A[index].in(0, value);
-		} else if (index < 2*bitness) {
-			inNOPs_A[index-bitness].in(0, value);
-		} else {
+		} else if (index < 2*bitness) {// second operand
+			inNOPs_B[index-bitness].in(0, value);
+		} else {// control
 			opNOPs[index - 2*bitness].in(0, value);
 		}
 		return this;

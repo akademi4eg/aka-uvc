@@ -6,11 +6,18 @@ package net.dtkanov.blocks.logic;
  *
  */
 public abstract class Node {
+	protected static int next_id = 1;
+	protected int id;
 	protected Wire out_node;
 	/** @param out Wire connecting node outputs to other nodes. */
 	protected Node(Wire out) {
 		out_node = out;
+		id = next_id++;
 		reset();
+	}
+	/** @return ID of the node. */
+	public int getId() {
+		return id;
 	}
 	/** @return node's wire */
 	public Wire getWire() {
@@ -80,7 +87,7 @@ public abstract class Node {
 	}
 	
 	public String toString() {
-		return "["+(isReady()?"+":"-")+hashCode()+":"+getClass().getSimpleName()+"]";
+		return "["+(isReady()?"+":"-")+getId()+":"+getClass().getSimpleName()+"]";
 	}
 	/** String representation of Node that takes into account its children.<br/>
 	 *  <strong>Caution!</strong> <i>Call for circuits with cycles may cause stack overflow.</i>
