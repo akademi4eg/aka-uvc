@@ -3,6 +3,7 @@ package net.dtkanov.blocks.tests;
 import static org.junit.Assert.*;
 
 import net.dtkanov.blocks.circuit.*;
+import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.*;
 
 import org.junit.Test;
@@ -421,6 +422,46 @@ public class CircuitsTest {
 		cin.setValue(false).propagate();
 		assertTrue(add.out(0));
 		assertFalse(add.out(1));
+	}
+	
+	@Test
+	public void ShifterTest() {
+		final int num_bits = 4;
+		Register reg = new Register(num_bits);
+		Shifter sh = new Shifter(num_bits, 1);
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		// 0101
+		reg.in(0, true)
+		   .in(1, false)
+		   .in(2, true)
+		   .in(3, false)
+		   .in(4, true);
+		reg.propagate();
+		// (0)1010
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==true);
+		assertTrue(sh.out(2)==false);
+		assertTrue(sh.out(3)==true);
+		assertTrue(sh.out(4)==false);
+		
+		sh = new Shifter(num_bits, -2);
+		reg.disconnectDst();
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		// 1011
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		reg.propagate();
+		// (1)0010
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==true);
+		assertTrue(sh.out(2)==false);
+		assertTrue(sh.out(3)==false);
+		assertTrue(sh.out(4)==true);
 	}
 
 }

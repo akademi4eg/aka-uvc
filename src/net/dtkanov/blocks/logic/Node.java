@@ -23,6 +23,11 @@ public abstract class Node {
 	public Wire getWire() {
 		return out_node;
 	}
+	/** Removes connected output wires. */
+	public Node disconnectDst() {
+		out_node = null;
+		return this;
+	}
 	/**
 	 * Connects dst node to output of current node.
 	 * @param src_port output port of current node
