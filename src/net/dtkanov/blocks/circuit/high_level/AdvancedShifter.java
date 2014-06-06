@@ -57,6 +57,7 @@ public class AdvancedShifter extends Node {
 
 	@Override
 	public boolean out(int index) {
+		// TODO implement carry out
 		return muxs[muxs.length-1].out(index);
 	}
 
