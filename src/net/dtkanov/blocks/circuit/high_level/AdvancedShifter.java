@@ -27,23 +27,28 @@ public class AdvancedShifter extends Node {
 				shifters[i] = new Shifter(num_bits, 1<<i);
 			else
 				shifters[i] = new Shifter(num_bits, -(1<<i));
-			muxs[i] = new MultiMux(num_bits);
+			// additional bit for carry
+			muxs[i] = new MultiMux(num_bits+1);
 			ctrlNOPs[i] = new NOPNode();
 		}
 		for (int i = 1; i < num_ctrls; i++) {
 			for (int j = 0; j < bitness; j++) {
 				shifters[i].connectSrc(muxs[i-1], j, j);
 				muxs[i].connectSrc(shifters[i], j, j);
-				muxs[i].connectSrc(muxs[i-1], j, j+bitness);
+				muxs[i].connectSrc(muxs[i-1], j, j+bitness+1);
 			}
-			muxs[i].connectSrc(ctrlNOPs[i], 0, 2*bitness);
+			muxs[i].connectSrc(shifters[i], bitness, bitness);
+			muxs[i].connectSrc(muxs[i-1], bitness, 2*bitness+1);
+			muxs[i].connectSrc(ctrlNOPs[i], 0, 2*bitness+2);
 		}
 		for (int j = 0; j < bitness; j++) {
 			shifters[0].connectSrc(inNOPs[j], 0, j);
 			muxs[0].connectSrc(shifters[0], j, j);
-			muxs[0].connectSrc(inNOPs[j], 0, j+bitness);
+			muxs[0].connectSrc(inNOPs[j], 0, j+bitness+1);
 		}
-		muxs[0].connectSrc(ctrlNOPs[0], 0, 2*bitness);
+		muxs[0].connectSrc(shifters[0], bitness, bitness);
+		muxs[0].connectSrc(inNOPs[0], 0, 2*bitness+1);
+		muxs[0].connectSrc(ctrlNOPs[0], 0, 2*bitness+2);
 	}
 	@Override
 	public Node in(int index, boolean value) {
@@ -57,7 +62,6 @@ public class AdvancedShifter extends Node {
 
 	@Override
 	public boolean out(int index) {
-		// TODO implement carry out
 		return muxs[muxs.length-1].out(index);
 	}
 

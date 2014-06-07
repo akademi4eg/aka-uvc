@@ -320,6 +320,7 @@ public class HighLevelCircuitsTest {
 		assertTrue(sh.out(3)==false);
 		assertTrue(sh.out(4)==false);
 		assertTrue(sh.out(5)==true);
+		assertTrue(sh.out(6)==false);
 		
 		sh = new AdvancedShifter(num_bits, false);
 		reg.disconnectDst();
@@ -351,5 +352,6 @@ public class HighLevelCircuitsTest {
 		assertTrue(sh.out(3)==false);
 		assertTrue(sh.out(4)==false);
 		assertTrue(sh.out(5)==false);
+		assertTrue(sh.out(6)==true);
 	}
 }
