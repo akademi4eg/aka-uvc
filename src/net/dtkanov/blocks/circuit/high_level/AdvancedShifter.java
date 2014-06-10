@@ -50,6 +50,11 @@ public class AdvancedShifter extends Node {
 		muxs[0].connectSrc(inNOPs[0], 0, 2*bitness+1);
 		muxs[0].connectSrc(ctrlNOPs[0], 0, 2*bitness+2);
 	}
+	
+	public int countCtrlBits() {
+		return ctrlNOPs.length;
+	}
+	
 	@Override
 	public Node in(int index, boolean value) {
 		if (index < bitness) {
