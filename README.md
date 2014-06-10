@@ -14,23 +14,27 @@ Implemented elements:
 * ALU is under construction
 
 ALU control codes:
+
 logic
-0000	AND
-0001	OR
-0010	XOR
-0011	NOT
+* 0000	AND
+* 1000	OR
+* 0100	XOR
+* 1100	NOT
+
 bits
-0100	SHL
-0101	SHR
-0110	ROL
-0111	ROR
+* 0010	SHL
+* 1010	SHR
+* 0110	ROL
+* 1110	ROR
+
 arithmetics
-1000	ADD
-1001	SUB
-1010	INC
-1011	DEC
+* 0001	ADD
+* 1001	SUB
+* 0101	INC
+* 1101	DEC
+
 util
-1100	XCHG
-1101	CMP
-1110	reserved
-1111	reserved
+* 0011	XCHG
+* 1011	CMP
+* 0111	reserved
+* 1111	reserved

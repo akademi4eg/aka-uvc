@@ -38,7 +38,7 @@ public class Shifter extends Node {
 		}
 		ind = (bitness-shift)%bitness;
 		if (shift<0)
-			ind--;
+			ind = (ind+bitness-1)%bitness;
 		outNOPs[bitness].connectSrc(inNOPs[ind], 0, 0);
 	}
 

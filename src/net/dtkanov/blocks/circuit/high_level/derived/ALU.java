@@ -4,6 +4,7 @@ import net.dtkanov.blocks.circuit.MultiAND;
 import net.dtkanov.blocks.circuit.MultiNOT;
 import net.dtkanov.blocks.circuit.MultiOR;
 import net.dtkanov.blocks.circuit.MultiXOR;
+import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
@@ -18,10 +19,12 @@ public class ALU extends Node {
 	protected Node opNOPs[];
 	protected Node outMUXs[];
 	// operations
-	protected Node opAND;
-	protected Node opOR;
-	protected Node opXOR;
-	protected Node opNOT;
+	protected MultiAND opAND;
+	protected MultiOR opOR;
+	protected MultiXOR opXOR;
+	protected MultiNOT opNOT;
+	protected AdvancedShifter sh_left;
+	protected AdvancedShifter sh_right;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -80,8 +83,26 @@ public class ALU extends Node {
 			// 0011
 			opNOT.connectDst(j, outMUXs[outMUXs.length-2], j);
 		}
+		sh_left = new AdvancedShifter(bitness, true);
+		for (int j = 0; j < bitness; j++) {
+			sh_left.connectSrc(inNOPs_A[j], 0, j);
+			// 0100
+			sh_left.connectDst(j, outMUXs[outMUXs.length-3], j+bitness);
+		}
+		for (int j = 0; j < sh_left.countCtrlBits(); j++) {
+			sh_left.connectSrc(inNOPs_B[j], 0, j+bitness);
+		}
+		sh_right = new AdvancedShifter(bitness, false);
+		for (int j = 0; j < bitness; j++) {
+			sh_right.connectSrc(inNOPs_A[j], 0, j);
+			// 0101
+			sh_right.connectDst(j, outMUXs[outMUXs.length-3], j);
+		}
+		for (int j = 0; j < sh_right.countCtrlBits(); j++) {
+			sh_right.connectSrc(inNOPs_B[j], 0, j+bitness);
+		}
 		// TODO connect operations, remove this stub
-		for (int i = outMUXs.length-3; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
+		for (int i = outMUXs.length-4; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
 				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
 				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);
