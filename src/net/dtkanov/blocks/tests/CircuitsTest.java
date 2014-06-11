@@ -464,4 +464,41 @@ public class CircuitsTest {
 		assertTrue(sh.out(4)==true);
 	}
 
+	@Test
+	public void RotatorTest() {
+		final int num_bits = 4;
+		Register reg = new Register(num_bits);
+		Rotator sh = new Rotator(num_bits, 1);
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		// 0101
+		reg.in(0, true)
+		   .in(1, false)
+		   .in(2, true)
+		   .in(3, false)
+		   .in(4, true);
+		reg.propagate();
+		// 1010
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==true);
+		assertTrue(sh.out(2)==false);
+		assertTrue(sh.out(3)==true);
+		
+		sh = new Rotator(num_bits, -2);
+		reg.disconnectDst();
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		// 1011
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		reg.propagate();
+		// 1110
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==true);
+		assertTrue(sh.out(2)==true);
+		assertTrue(sh.out(3)==true);
+	}
 }
