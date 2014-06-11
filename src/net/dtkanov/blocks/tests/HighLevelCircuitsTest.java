@@ -2,6 +2,7 @@ package net.dtkanov.blocks.tests;
 
 import static org.junit.Assert.*;
 
+import net.dtkanov.blocks.circuit.high_level.AdvancedRotator;
 import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.Complementer;
 import net.dtkanov.blocks.circuit.high_level.Incrementer;
@@ -287,7 +288,7 @@ public class HighLevelCircuitsTest {
 	}
 	
 	@Test
-	public void AdvancedCircuitsTest() {
+	public void AdvancedShifterTest() {
 		int num_bits = 6;
 		int num_ctrl = 3;
 		Node sh = new AdvancedShifter(num_bits, true);
@@ -353,5 +354,72 @@ public class HighLevelCircuitsTest {
 		assertTrue(sh.out(4)==false);
 		assertTrue(sh.out(5)==false);
 		assertTrue(sh.out(6)==true);
+	}
+	
+	@Test
+	public void AdvancedRotatorTest() {
+		int num_bits = 6;
+		int num_ctrl = 3;
+		Node sh = new AdvancedRotator(num_bits, true);
+		Register reg = new Register(num_bits);
+		Register ctrl = new Register(num_ctrl);
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		for (int i = 0; i < num_ctrl; i++)
+			sh.connectSrc(ctrl, i, i+num_bits);
+		// 010101
+		reg.in(0, true)
+		   .in(1, false)
+		   .in(2, true)
+		   .in(3, false)
+		   .in(4, true)
+		   .in(5, false)
+		   .in(6, true);
+		// 101
+		ctrl.in(0, true)
+			.in(1, false)
+			.in(2, true)
+			.in(3, true);
+		reg.propagate();
+		ctrl.propagate();
+		
+		// 101010
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==true);
+		assertTrue(sh.out(2)==false);
+		assertTrue(sh.out(3)==true);
+		assertTrue(sh.out(4)==false);
+		assertTrue(sh.out(5)==true);
+		
+		sh = new AdvancedRotator(num_bits, false);
+		reg.disconnectDst();
+		ctrl.disconnectDst();
+		for (int i = 0; i < num_bits; i++)
+			sh.connectSrc(reg, i, i);
+		for (int i = 0; i < num_ctrl; i++)
+			sh.connectSrc(ctrl, i, i+num_bits);
+		// 100111
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, true)
+		   .in(3, false)
+		   .in(4, false)
+		   .in(5, true)
+		   .in(6, true);
+		// 011
+		ctrl.in(0, true)
+			.in(1, true)
+			.in(2, false)
+			.in(3, true);
+		reg.propagate();
+		ctrl.propagate();
+		
+		// 111100
+		assertTrue(sh.out(0)==false);
+		assertTrue(sh.out(1)==false);
+		assertTrue(sh.out(2)==true);
+		assertTrue(sh.out(3)==true);
+		assertTrue(sh.out(4)==true);
+		assertTrue(sh.out(5)==true);
 	}
 }
