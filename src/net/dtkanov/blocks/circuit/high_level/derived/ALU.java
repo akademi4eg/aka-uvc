@@ -4,6 +4,7 @@ import net.dtkanov.blocks.circuit.MultiAND;
 import net.dtkanov.blocks.circuit.MultiNOT;
 import net.dtkanov.blocks.circuit.MultiOR;
 import net.dtkanov.blocks.circuit.MultiXOR;
+import net.dtkanov.blocks.circuit.high_level.AdvancedRotator;
 import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.NOPNode;
@@ -25,6 +26,8 @@ public class ALU extends Node {
 	protected MultiNOT opNOT;
 	protected AdvancedShifter sh_left;
 	protected AdvancedShifter sh_right;
+	protected AdvancedRotator rot_left;
+	protected AdvancedRotator rot_right;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -67,26 +70,26 @@ public class ALU extends Node {
 		for (int j = 0; j < bitness; j++) {
 			opOR.connectSrc(inNOPs_A[j], 0, j);
 			opOR.connectSrc(inNOPs_B[j], 0, j+bitness);
-			// 0001
+			// 1000
 			opOR.connectDst(j, outMUXs[outMUXs.length-1], j);
 		}
 		opXOR = new MultiXOR(bitness);
 		for (int j = 0; j < bitness; j++) {
 			opXOR.connectSrc(inNOPs_A[j], 0, j);
 			opXOR.connectSrc(inNOPs_B[j], 0, j+bitness);
-			// 0010
+			// 0100
 			opXOR.connectDst(j, outMUXs[outMUXs.length-2], j+bitness);
 		}
 		opNOT = new MultiNOT(bitness);
 		for (int j = 0; j < bitness; j++) {
 			opNOT.connectSrc(inNOPs_A[j], 0, j);
-			// 0011
+			// 1100
 			opNOT.connectDst(j, outMUXs[outMUXs.length-2], j);
 		}
 		sh_left = new AdvancedShifter(bitness, true);
 		for (int j = 0; j < bitness; j++) {
 			sh_left.connectSrc(inNOPs_A[j], 0, j);
-			// 0100
+			// 0010
 			sh_left.connectDst(j, outMUXs[outMUXs.length-3], j+bitness);
 		}
 		for (int j = 0; j < sh_left.countCtrlBits(); j++) {
@@ -95,14 +98,32 @@ public class ALU extends Node {
 		sh_right = new AdvancedShifter(bitness, false);
 		for (int j = 0; j < bitness; j++) {
 			sh_right.connectSrc(inNOPs_A[j], 0, j);
-			// 0101
+			// 1010
 			sh_right.connectDst(j, outMUXs[outMUXs.length-3], j);
 		}
 		for (int j = 0; j < sh_right.countCtrlBits(); j++) {
 			sh_right.connectSrc(inNOPs_B[j], 0, j+bitness);
 		}
+		rot_left = new AdvancedRotator(bitness, true);
+		for (int j = 0; j < bitness; j++) {
+			rot_left.connectSrc(inNOPs_A[j], 0, j);
+			// 0110
+			rot_left.connectDst(j, outMUXs[outMUXs.length-4], j+bitness);
+		}
+		for (int j = 0; j < rot_left.countCtrlBits(); j++) {
+			rot_left.connectSrc(inNOPs_B[j], 0, j+bitness);
+		}
+		rot_right = new AdvancedRotator(bitness, false);
+		for (int j = 0; j < bitness; j++) {
+			rot_right.connectSrc(inNOPs_A[j], 0, j);
+			// 1110
+			rot_right.connectDst(j, outMUXs[outMUXs.length-4], j);
+		}
+		for (int j = 0; j < rot_right.countCtrlBits(); j++) {
+			rot_right.connectSrc(inNOPs_B[j], 0, j+bitness);
+		}
 		// TODO connect operations, remove this stub
-		for (int i = outMUXs.length-4; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
+		for (int i = outMUXs.length-5; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
 				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
 				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);

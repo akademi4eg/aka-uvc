@@ -10,6 +10,7 @@ Implemented elements:
 * other logic gates based on basic ones
 * clocking device, multiplexer and flip-flops
 * register and vectorized versions of logic operations
+* bits manipulations (shifts and rotations)
 * arithmetics (adder, two's complement etc.)
 * ALU is under construction
 

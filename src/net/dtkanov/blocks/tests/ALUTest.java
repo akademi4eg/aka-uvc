@@ -334,4 +334,106 @@ public class ALUTest {
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
 	}
+	
+	@Test
+	public void ROLTest() {
+		ctrl[0].setValue(false);
+		ctrl[1].setValue(true);
+		ctrl[2].setValue(true);
+		ctrl[3].setValue(false);
+		// ROL 1001b, 3
+		op1.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 1100b
+		assertTrue(alu.out(0)==false);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==true);
+		assertTrue(alu.out(3)==true);
+		
+		// ROL 1010b, 1
+		op1.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0101b
+		assertTrue(alu.out(0)==true);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==true);
+		assertTrue(alu.out(3)==false);
+	}
+	
+	@Test
+	public void RORTest() {
+		ctrl[0].setValue(false);
+		ctrl[1].setValue(true);
+		ctrl[2].setValue(true);
+		ctrl[3].setValue(true);
+		// ROR 1001b, 3
+		op1.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0011b
+		assertTrue(alu.out(0)==true);
+		assertTrue(alu.out(1)==true);
+		assertTrue(alu.out(2)==false);
+		assertTrue(alu.out(3)==false);
+		
+		// ROR 1010b, 1
+		op1.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0101b
+		assertTrue(alu.out(0)==true);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==true);
+		assertTrue(alu.out(3)==false);
+	}
 }
