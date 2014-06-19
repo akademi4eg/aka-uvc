@@ -7,6 +7,7 @@ import net.dtkanov.blocks.circuit.MultiXOR;
 import net.dtkanov.blocks.circuit.high_level.AdvancedRotator;
 import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.Complementer;
+import net.dtkanov.blocks.circuit.high_level.Incrementer;
 import net.dtkanov.blocks.circuit.high_level.MultiAdder;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.ConstantNode;
@@ -35,6 +36,7 @@ public class ALU extends Node {
 	protected Complementer compl;
 	protected MultiAdder subtr;
 	protected ConstantNode zero;
+	protected Incrementer inc;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -149,8 +151,15 @@ public class ALU extends Node {
 			subtr.connectDst(j, outMUXs[outMUXs.length-5], j);
 		}
 		subtr.connectSrc(zero, 0, 2*bitness);
+		inc = new Incrementer(bitness);
+		for (int j = 0; j < bitness; j++) {
+			inc.connectSrc(inNOPs_A[j], 0, j);
+			// 0101
+			inc.connectDst(j, outMUXs[outMUXs.length-6], j+bitness);
+			inc.connectDst(j, outMUXs[outMUXs.length-6], j);
+		}
 		// TODO connect operations, remove this stub
-		for (int i = outMUXs.length-6; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
+		for (int i = outMUXs.length-7; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
 				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
 				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);
