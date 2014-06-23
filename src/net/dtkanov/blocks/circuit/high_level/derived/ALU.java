@@ -13,6 +13,7 @@ import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.logic.ConstantNode;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
+import net.dtkanov.blocks.logic.derived.ORNode;
 /** Implements 2 operands arithmetic-logic unit. */
 public class ALU extends Node {
 	/** Number of bits representing command selection. */
@@ -40,6 +41,7 @@ public class ALU extends Node {
 	protected Complementer compl_pre;
 	protected Incrementer inc_dec;
 	protected Complementer compl_post;
+	protected ORNode cmpz[];
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -170,8 +172,26 @@ public class ALU extends Node {
 			// 1101
 			compl_post.connectDst(j, outMUXs[outMUXs.length-6], j);
 		}
-		// TODO connect operations, remove this stub
-		for (int i = outMUXs.length-7; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
+		cmpz = new ORNode[bitness-1];
+		cmpz[0] = new ORNode();
+		cmpz[0].connectSrc(inNOPs_A[0], 0, 0);
+		cmpz[0].connectSrc(inNOPs_A[1], 0, 1);
+		for (int j = 1; j < bitness-1; j++) {
+			cmpz[j] = new ORNode();
+			cmpz[j].connectSrc(inNOPs_A[j+1], 0, 0);
+			cmpz[j].connectSrc(cmpz[j-1], 0, 1);
+		}
+		// 0011
+		cmpz[bitness-2].connectDst(0, outMUXs[outMUXs.length-7], bitness);
+		for (int j = 1; j < bitness; j++) {
+			zero.connectDst(0, outMUXs[outMUXs.length-7], j+bitness);
+		}
+		cmpz[bitness-2].connectDst(0, outMUXs[outMUXs.length-7], 0);
+		for (int j = 1; j < bitness; j++) {
+			zero.connectDst(0, outMUXs[outMUXs.length-7], j);
+		}
+		// stub for all other operations
+		for (int i = outMUXs.length-8; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
 				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
 				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);

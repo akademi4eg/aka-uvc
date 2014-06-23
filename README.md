@@ -3,7 +3,7 @@ aka-uvc
 
 Useless Virtual Circuits
 
-If everything ok, this will evolve to emulator of a simple computer.
+If everything ok, this evolve to emulator of a simple computer.
 
 Implemented elements:
 * basic logic gates (NOT and AND)
@@ -17,25 +17,25 @@ Implemented elements:
 ALU control codes:
 
 logic
-* 0000	AND
-* 1000	OR
-* 0100	XOR
-* 1100	NOT
+* 0000	AND (bitwise AND)
+* 1000	OR (bitwise OR)
+* 0100	XOR (bitwise XOR)
+* 1100	NOT (bitwise NOT)
 
 bits
-* 0010	SHL
-* 1010	SHR
-* 0110	ROL
-* 1110	ROR
+* 0010	SHL (shift left)
+* 1010	SHR (shift right)
+* 0110	ROL (rotate left)
+* 1110	ROR (rotate right)
 
 arithmetics
-* 0001	ADD
-* 1001	SUB
-* 0101	INC
-* 1101	DEC
+* 0001	ADD (add to numbers)
+* 1001	SUB (subtract two numbers)
+* 0101	INC (increment)
+* 1101	DEC (decrement)
 
 util
-* 0011	XCHG
+* 0011	CMPNZ (check if is not zero)
 * 1011	CMP
 * 0111	reserved
 * 1111	reserved
