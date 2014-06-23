@@ -569,7 +569,7 @@ public class ALUTest {
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==true);
 		
-		// INC 1111b, 1
+		// INC 1111b
 		op1.in(0, true)
 		   .in(1, true)
 		   .in(2, true)
@@ -590,5 +590,56 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+	}
+	
+	@Test
+	public void DECTest() {
+		ctrl[0].setValue(true);
+		ctrl[1].setValue(false);
+		ctrl[2].setValue(true);
+		ctrl[3].setValue(true);
+		// DEC 0010b
+		op1.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0001b
+		assertTrue(alu.out(0)==true);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==false);
+		assertTrue(alu.out(3)==false);
+		
+		// DEC 1111b
+		op1.in(0, true)
+		   .in(1, true)
+		   .in(2, true)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 1110b
+		assertTrue(alu.out(0)==false);
+		assertTrue(alu.out(1)==true);
+		assertTrue(alu.out(2)==true);
+		assertTrue(alu.out(3)==true);
 	}
 }

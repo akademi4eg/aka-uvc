@@ -37,6 +37,9 @@ public class ALU extends Node {
 	protected MultiAdder subtr;
 	protected ConstantNode zero;
 	protected Incrementer inc;
+	protected Complementer compl_pre;
+	protected Incrementer inc_dec;
+	protected Complementer compl_post;
 	
 	public ALU(int num_bits) {
 		super(null);
@@ -156,7 +159,16 @@ public class ALU extends Node {
 			inc.connectSrc(inNOPs_A[j], 0, j);
 			// 0101
 			inc.connectDst(j, outMUXs[outMUXs.length-6], j+bitness);
-			inc.connectDst(j, outMUXs[outMUXs.length-6], j);
+		}
+		compl_pre = new Complementer(bitness);
+		compl_post = new Complementer(bitness);
+		inc_dec = new Incrementer(bitness);
+		for (int j = 0; j < bitness; j++) {
+			compl_pre.connectSrc(inNOPs_A[j], 0, j);
+			inc_dec.connectSrc(compl_pre, j, j);
+			compl_post.connectSrc(inc_dec, j, j);
+			// 1101
+			compl_post.connectDst(j, outMUXs[outMUXs.length-6], j);
 		}
 		// TODO connect operations, remove this stub
 		for (int i = outMUXs.length-7; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
