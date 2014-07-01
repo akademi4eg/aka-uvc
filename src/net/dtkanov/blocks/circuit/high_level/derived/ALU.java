@@ -186,7 +186,8 @@ public class ALU extends Node {
 		for (int j = 1; j < bitness; j++) {
 			zero.connectDst(0, outMUXs[outMUXs.length-7], j+bitness);
 		}
-		cmpz[bitness-2].connectDst(0, outMUXs[outMUXs.length-7], 0);
+		// 1011
+		inNOPs_A[bitness-1].connectDst(0, outMUXs[outMUXs.length-7], 0);
 		for (int j = 1; j < bitness; j++) {
 			zero.connectDst(0, outMUXs[outMUXs.length-7], j);
 		}

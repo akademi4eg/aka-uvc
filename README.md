@@ -12,7 +12,7 @@ Implemented elements:
 * register and vectorized versions of logic operations
 * bits manipulations (shifts and rotations)
 * arithmetics (adder, two's complement etc.)
-* ALU is under construction
+* simple ALU
 
 ALU control codes:
 
@@ -36,6 +36,6 @@ arithmetics
 
 util
 * 0011	CMPNZ (check if is not zero)
-* 1011	CMP
+* 1011	SIGN (return sign bit)
 * 0111	reserved
 * 1111	reserved

@@ -644,7 +644,7 @@ public class ALUTest {
 	}
 	
 	@Test
-	public void CMPZTest() {
+	public void CMPNZTest() {
 		ctrl[0].setValue(true);
 		ctrl[1].setValue(true);
 		ctrl[2].setValue(false);
@@ -671,7 +671,7 @@ public class ALUTest {
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
 		
-		// DEC 0000b
+		// CMPNZ 0000b
 		op1.in(0, false)
 		   .in(1, false)
 		   .in(2, false)
@@ -689,6 +689,57 @@ public class ALUTest {
 			ctrl[i].propagate();
 		// 0000b
 		assertTrue(alu.out(0)==false);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==false);
+		assertTrue(alu.out(3)==false);
+	}
+	
+	@Test
+	public void SIGNTest() {
+		ctrl[0].setValue(true);
+		ctrl[1].setValue(true);
+		ctrl[2].setValue(false);
+		ctrl[3].setValue(true);
+		// SIGN 0010b
+		op1.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0000b
+		assertTrue(alu.out(0)==false);
+		assertTrue(alu.out(1)==false);
+		assertTrue(alu.out(2)==false);
+		assertTrue(alu.out(3)==false);
+		
+		// CMPNZ 1010b
+		op1.in(0, false)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, true);
+		op2.in(0, true)
+		   .in(1, false)
+		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		
+		op1.propagate();
+		op2.propagate();
+		for (int i = 0; i < ctrl.length; i++)
+			ctrl[i].propagate();
+		// 0001b
+		assertTrue(alu.out(0)==true);
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
