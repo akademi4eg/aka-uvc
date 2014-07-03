@@ -501,4 +501,96 @@ public class CircuitsTest {
 		assertTrue(sh.out(2)==true);
 		assertTrue(sh.out(3)==true);
 	}
+	
+	@Test
+	public void MemoryTest() {
+		final int num_bits = 8;
+		final int addr_size = 4;
+		Register reg = new Register(num_bits);
+		Register addr = new Register(addr_size);
+		ConstantNode mode = new ConstantNode(true);
+		Memory mem = new Memory(addr_size);
+		for (int i = 0; i < addr_size; i++)
+			addr.connectDst(i, mem, i);
+		for (int i = 0; i < num_bits; i++)
+			reg.connectDst(i, mem, i+addr_size);
+		mode.connectDst(0, mem, addr_size+num_bits);
+		// 1011
+		addr.in(0, true)
+		    .in(1, true)
+		    .in(2, false)
+		    .in(3, true)
+		    .in(4, true);
+		// 00001011
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, false)
+		   .in(5, false)
+		   .in(6, false)
+		   .in(7, false)
+		   .in(8, true);
+		addr.propagate();
+		reg.propagate();
+		mode.propagate();
+		// 00001011
+		assertTrue(mem.out(0)==true);
+		assertTrue(mem.out(1)==true);
+		assertTrue(mem.out(2)==false);
+		assertTrue(mem.out(3)==true);
+		assertTrue(mem.out(4)==false);
+		assertTrue(mem.out(5)==false);
+		assertTrue(mem.out(6)==false);
+		assertTrue(mem.out(7)==false);
+		//////////////////////
+		// 1001
+		addr.in(0, true)
+		    .in(1, false)
+		    .in(2, false)
+		    .in(3, true)
+		    .in(4, true);
+		// 10001011
+		reg.in(0, true)
+		   .in(1, true)
+		   .in(2, false)
+		   .in(3, true)
+		   .in(4, false)
+		   .in(5, false)
+		   .in(6, false)
+		   .in(7, true)
+		   .in(8, true);
+		addr.propagate();
+		reg.propagate();
+		mode.propagate();
+		// 00001011
+		assertTrue(mem.out(0)==true);
+		assertTrue(mem.out(1)==true);
+		assertTrue(mem.out(2)==false);
+		assertTrue(mem.out(3)==true);
+		assertTrue(mem.out(4)==false);
+		assertTrue(mem.out(5)==false);
+		assertTrue(mem.out(6)==false);
+		assertTrue(mem.out(7)==true);
+		//////////////////////
+		mode.setValue(false);
+		// 1011
+		addr.in(0, true)
+		    .in(1, true)
+		    .in(2, false)
+		    .in(3, true)
+		    .in(4, true);
+		addr.propagate();
+		reg.propagate(true);
+		mode.propagate();
+		// 00001011
+		assertTrue(mem.out(0)==true);
+		assertTrue(mem.out(1)==true);
+		assertTrue(mem.out(2)==false);
+		assertTrue(mem.out(3)==true);
+		assertTrue(mem.out(4)==false);
+		assertTrue(mem.out(5)==false);
+		assertTrue(mem.out(6)==false);
+		assertTrue(mem.out(7)==false);
+	}
 }
