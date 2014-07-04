@@ -13,6 +13,7 @@ Implemented elements:
 * bits manipulations (shifts and rotations)
 * arithmetics (adder, two's complement etc.)
 * simple ALU
+* memory
 
 ALU control codes:
 
@@ -37,5 +38,5 @@ arithmetics
 util
 * 0011	CMPNZ (check if is not zero)
 * 1011	SIGN (return sign bit)
-* 0111	reserved
-* 1111	reserved
+* 0111	OP1 (pass operand 1)
+* 1111	OP2 (pass operand 2)

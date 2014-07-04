@@ -191,8 +191,14 @@ public class ALU extends Node {
 		for (int j = 1; j < bitness; j++) {
 			zero.connectDst(0, outMUXs[outMUXs.length-7], j);
 		}
+		for (int j = 0; j < bitness; j++) {
+			// 0111
+			outMUXs[outMUXs.length-8].connectSrc(inNOPs_A[j], 0, j + bitness);
+			// 1111
+			outMUXs[outMUXs.length-8].connectSrc(inNOPs_B[j], 0, j);
+		}
 		// stub for all other operations
-		for (int i = outMUXs.length-8; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
+		for (int i = outMUXs.length-9; i >= outMUXs.length-(1<<(NUM_CMD_BITS-1)); i--) {
 			for (int j = 0; j < bitness; j++) {
 				outMUXs[i].connectSrc(inNOPs_A[j], 0, j);
 				outMUXs[i].connectSrc(inNOPs_B[j], 0, j + bitness);
