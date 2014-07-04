@@ -121,6 +121,39 @@ public class CircuitsTest {
 	}
 	
 	@Test
+	public void DeMuxTest() {
+		ConstantNode in = new ConstantNode(true);
+		ConstantNode control = new ConstantNode(true);
+		Node mux = new DeMux().connectSrc(in, 0, 0)
+							  .connectSrc(control, 0, 1);
+		
+		in.propagate();
+		control.propagate();
+		assertTrue(mux.out(0)==true);
+		assertTrue(mux.out(1)==false);
+		
+		in.setValue(false).propagate();
+		control.propagate();
+		assertTrue(mux.out(0)==false);
+		assertTrue(mux.out(1)==false);
+		
+		in.setValue(true).propagate();
+		control.setValue(false).propagate();
+		assertTrue(mux.out(0)==false);
+		assertTrue(mux.out(1)==true);
+		
+		in.setValue(true).propagate();
+		control.setValue(false).propagate();
+		assertTrue(mux.out(0)==false);
+		assertTrue(mux.out(1)==true);
+		
+		in.setValue(false).propagate();
+		control.setValue(false).propagate();
+		assertTrue(mux.out(0)==false);
+		assertTrue(mux.out(1)==false);
+	}
+	
+	@Test
 	public void MultiNOTTest() {
 		int num_bits = 4;
 		Node reg = new MultiNOT(num_bits);

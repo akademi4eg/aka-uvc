@@ -8,7 +8,7 @@ If everything ok, this evolve to emulator of a simple computer.
 Implemented elements:
 * basic logic gates (NOT and AND)
 * other logic gates based on basic ones
-* clocking device, multiplexer and flip-flops
+* clocking device, mux, demux and flip-flops
 * register and vectorized versions of logic operations
 * bits manipulations (shifts and rotations)
 * arithmetics (adder, two's complement etc.)
