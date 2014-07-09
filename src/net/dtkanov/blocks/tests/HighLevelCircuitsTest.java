@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import net.dtkanov.blocks.circuit.high_level.AdvancedRotator;
 import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.Complementer;
+import net.dtkanov.blocks.circuit.high_level.Extractor;
 import net.dtkanov.blocks.circuit.high_level.Incrementer;
 import net.dtkanov.blocks.circuit.high_level.MultiAdder;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
@@ -421,5 +422,51 @@ public class HighLevelCircuitsTest {
 		assertTrue(sh.out(3)==true);
 		assertTrue(sh.out(4)==true);
 		assertTrue(sh.out(5)==true);
+	}
+	
+	@Test
+	public void ExtractorTest() {
+		int addr_size = 4;
+		byte[] data = new byte[1<<addr_size];
+		for (int i = 0; i < data.length; i++)
+			data[i] = (byte)i;
+		Extractor ext = new Extractor(addr_size, data);
+		Register reg = new Register(addr_size);
+		for (int i = 0; i < addr_size; i++)
+			reg.connectDst(i, ext, i);
+		// mem[4] -> 4 5 6
+		reg.in(0, false)
+		   .in(1, false)
+		   .in(2, true)
+		   .in(3, false)
+		   .in(5, true);
+		reg.propagate();
+		// 4
+		assertTrue(ext.out(0)==false);
+		assertTrue(ext.out(1)==false);
+		assertTrue(ext.out(2)==true);
+		assertTrue(ext.out(3)==false);
+		assertTrue(ext.out(4)==false);
+		assertTrue(ext.out(5)==false);
+		assertTrue(ext.out(6)==false);
+		assertTrue(ext.out(7)==false);
+		// 5
+		assertTrue(ext.out(8)==true);
+		assertTrue(ext.out(9)==false);
+		assertTrue(ext.out(10)==true);
+		assertTrue(ext.out(11)==false);
+		assertTrue(ext.out(12)==false);
+		assertTrue(ext.out(13)==false);
+		assertTrue(ext.out(14)==false);
+		assertTrue(ext.out(15)==false);
+		// 6
+		assertTrue(ext.out(16)==false);
+		assertTrue(ext.out(17)==true);
+		assertTrue(ext.out(18)==true);
+		assertTrue(ext.out(19)==false);
+		assertTrue(ext.out(20)==false);
+		assertTrue(ext.out(21)==false);
+		assertTrue(ext.out(22)==false);
+		assertTrue(ext.out(23)==false);
 	}
 }

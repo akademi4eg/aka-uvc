@@ -15,9 +15,20 @@ public class Memory extends Node {
 	public static int BITS_IN_BYTE = 8;
 	
 	public Memory(int pointer_size) {
+		this(pointer_size, null);
+	}
+	
+	public Memory(Memory other) {
+		this(other.addr_size, other.storage);
+	}
+	
+	public Memory(int pointer_size, byte[] a_storage) {
 		super(null);
 		addr_size = pointer_size;
-		storage = new byte[1<<addr_size];
+		if (a_storage != null)
+			storage = a_storage;
+		else
+			storage = new byte[1<<addr_size];
 		in_addr = new NOPNode[addr_size];
 		for (int i = 0; i < in_addr.length; i++) {
 			in_addr[i] = new NOPNode();
@@ -30,7 +41,7 @@ public class Memory extends Node {
 			in_data[i] = new NOPNode();
 		}
 	}
-
+	
 	@Override
 	public Node in(int index, boolean value) {
 		if (index < in_addr.length)
