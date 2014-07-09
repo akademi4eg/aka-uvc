@@ -1,5 +1,7 @@
-package net.dtkanov.blocks.circuit.high_level;
+package net.dtkanov.blocks.circuit.high_level.derived;
 
+import net.dtkanov.blocks.circuit.Memory;
+import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
 /** Implements control unit. */
@@ -28,6 +30,8 @@ public class ControlUnit extends Node {
 	private Register E;
 	private Register H;
 	private Register L;
+	/** Register-assistant. */
+	private Register W;
 	/** Stack Pointer */
 	private Register SP;
 	/** Program Counter */
@@ -38,18 +42,23 @@ public class ControlUnit extends Node {
 	private Node inNOPs_A[];
 	/** Data-byte 2 */
 	private Node inNOPs_B[];
+	/** Phase selector. */
+	private Node exec_phase;
 	/** Selector for ALU operand 1 */
 	private Node ALU_in_mux_A[];
 	/** Selector for ALU operand 2 */
 	private Node ALU_in_mux_B[];
 	/** Selector for output. */
 	private Node out_demux[];
+	/** ALU */
+	private Node alu;
+	/** Memory */
+	private Memory mem;
 	
 	public ControlUnit() {
 		super(null);
 		initInputs();
-		initRegisters();
-		initOperations();
+		initElements();
 	}
 	
 	private void initInputs() {
@@ -65,7 +74,7 @@ public class ControlUnit extends Node {
 		}
 	}
 	
-	private void initRegisters() {
+	private void initElements() {
 		A = new Register(BITNESS);
 		F = new Register(BITNESS);
 		B = new Register(BITNESS);
@@ -76,10 +85,10 @@ public class ControlUnit extends Node {
 		L = new Register(BITNESS);
 		SP = new Register(2*BITNESS);
 		PC = new Register(2*BITNESS);
+		alu = new ALU(BITNESS*2);
+		mem = new Memory(BITNESS*2);
 	}
 	
-	private void initOperations() {
-	}
 	/** Input: Opcode byte followed by two data bytes. */
 	@Override
 	public Node in(int index, boolean value) {
