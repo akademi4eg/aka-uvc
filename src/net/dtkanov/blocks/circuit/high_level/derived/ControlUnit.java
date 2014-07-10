@@ -1,6 +1,8 @@
 package net.dtkanov.blocks.circuit.high_level.derived;
 
+import net.dtkanov.blocks.circuit.DeMux;
 import net.dtkanov.blocks.circuit.Memory;
+import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
@@ -42,16 +44,14 @@ public class ControlUnit extends Node {
 	private Node inNOPs_A[];
 	/** Data-byte 2 */
 	private Node inNOPs_B[];
-	/** Phase selector. */
-	private Node exec_phase;
 	/** Selector for ALU operand 1 */
 	private Node ALU_in_mux_A[];
 	/** Selector for ALU operand 2 */
 	private Node ALU_in_mux_B[];
-	/** Selector for output. */
+	/** Selector for output to registers. */
 	private Node out_demux[];
 	/** ALU */
-	private Node alu;
+	private ALU alu;
 	/** Memory */
 	private Memory mem;
 	
@@ -87,6 +87,22 @@ public class ControlUnit extends Node {
 		PC = new Register(2*BITNESS);
 		alu = new ALU(BITNESS*2);
 		mem = new Memory(BITNESS*2);
+		initOutputToRegisters();
+	}
+	
+	private void initOutputToRegisters() {
+		final int REG_SEL_CNT = 4;
+		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
+		out_demux[0] = new DeMux();
+		//out_demux[0].connectSrc(REG_CTRL[0], 0, 1);
+		for (int i = 1; i < out_demux.length; i++) {
+			out_demux[i] = new DeMux();
+			// heap-like organization of indexes
+			out_demux[(i-1)/2].connectDst((i+1)%2, out_demux[i], 0);
+			// Adding small magic number to prevent rounding errors.
+			//int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
+			//out_demux[i].connectSrc(REG_CTRL[level], 0, 1);
+		}
 	}
 	
 	/** Input: Opcode byte followed by two data bytes. */
@@ -101,9 +117,10 @@ public class ControlUnit extends Node {
 		return this;
 	}
 
+	/** Returns address of next instruction for execution. */
 	@Override
 	public boolean out(int index) {
-		return false;
+		return PC.out(index);
 	}
 
 	@Override

@@ -626,4 +626,32 @@ public class CircuitsTest {
 		assertTrue(mem.out(6)==false);
 		assertTrue(mem.out(7)==false);
 	}
+	
+	@Test
+	public void LookUpTest() {
+		final int addr_size = 4;
+		Register addr = new Register(addr_size);
+		byte[] data = new byte[1<<addr_size];
+		data[11] = 10;
+		LookUp mem = new LookUp(addr_size, data);
+		for (int i = 0; i < addr_size; i++)
+			addr.connectDst(i, mem, i);
+		//////////////////////
+		// 1011
+		addr.in(0, true)
+		    .in(1, true)
+		    .in(2, false)
+		    .in(3, true)
+		    .in(4, true);
+		addr.propagate();
+		// 00001010
+		assertTrue(mem.out(0)==false);
+		assertTrue(mem.out(1)==true);
+		assertTrue(mem.out(2)==false);
+		assertTrue(mem.out(3)==true);
+		assertTrue(mem.out(4)==false);
+		assertTrue(mem.out(5)==false);
+		assertTrue(mem.out(6)==false);
+		assertTrue(mem.out(7)==false);
+	}
 }
