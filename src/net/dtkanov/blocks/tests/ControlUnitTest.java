@@ -13,6 +13,7 @@ public class ControlUnitTest {
 	private ConstantNode in_op[];
 	private ConstantNode in_data1[];
 	private ConstantNode in_data2[];
+	private ConstantNode clock;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -28,6 +29,8 @@ public class ControlUnitTest {
 			in_data2[i] = new ConstantNode(false);
 			in_data2[i].connectDst(0, cu, i+2*ControlUnit.BITNESS);
 		}
+		clock = new ConstantNode(true);
+		clock.connectDst(0, cu, 3*ControlUnit.BITNESS);
 	}
 
 	@Test
@@ -62,6 +65,8 @@ public class ControlUnitTest {
 		in_data2[5].setValue(false).propagate();
 		in_data2[6].setValue(false).propagate();
 		in_data2[7].setValue(false).propagate();
+		
+		clock.setValue(true).propagate();
 		
 		assertTrue(cu.getRegBValue(0)==true);
 		assertTrue(cu.getRegBValue(1)==true);

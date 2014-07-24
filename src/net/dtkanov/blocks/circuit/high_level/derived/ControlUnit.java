@@ -59,14 +59,18 @@ public class ControlUnit extends Node {
 	private byte storage[];
 	/** Fake zero */
 	private ConstantNode zero;
+	/** Fake one */
+	private ConstantNode one;
 	
 	public ControlUnit() {
 		super(null);
 		zero = new ConstantNode(false);
+		one = new ConstantNode(true);
 		storage = new byte[1<<(BITNESS*2)];
 		initInputs();
 		initElements();
 		zero.propagate();
+		one.propagate();
 	}
 	
 	public void loadToStorage(int offset, byte[] data) {
@@ -148,7 +152,7 @@ public class ControlUnit extends Node {
 		///////////////////////////////////////////////////////////////////////
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
-		byte[] alu_lookup = new byte[1<<8];
+		byte[] alu_lookup = new byte[1<<BITNESS];
 		for (int i = 0; i < 1<<6; i++) {
 			alu_lookup[(1<<6) + i] = 0b0111;// MOV => OP1
 			alu_lookup[i] = 0b0111;// MVI => OP1
@@ -176,7 +180,7 @@ public class ControlUnit extends Node {
 		alu_lookup[0b11101110] = 0b0100;// XRI => XOR
 		alu_lookup[0b00000111] = 0b0110;// RLC => ROL
 		alu_lookup[0b00001111] = 0b1110;// RRC => ROR
-		alu_ctrl = new LookUp(5, alu_lookup);
+		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		mem_alu_in = new LookUp(BITNESS*2, storage);// 16-bit addressing
 		///////////////////////////////////////////////////////////////////////
 		initInputFromRegisters();
@@ -205,8 +209,8 @@ public class ControlUnit extends Node {
 			ALU_in_mux_A[0].connectDst(j, alu, j);
 			A.connectDst(j, alu, j+BITNESS);
 		}
-		for (int j = 0; j < 5; j++) {
-			alu_ctrl.connectSrc(opNOPs[3+j], 0, j);
+		for (int j = 0; j < BITNESS; j++) {
+			alu_ctrl.connectSrc(opNOPs[j], 0, j);
 		}
 		for (int j = 0; j < ALU.NUM_CMD_BITS; j++) {
 			alu_ctrl.connectDst(j, alu, j+2*BITNESS);
@@ -243,6 +247,7 @@ public class ControlUnit extends Node {
 		final int REG_SEL_CNT = 3;
 		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
 		out_demux[0] = new DeMux();
+		out_demux[0].connectSrc(one, 0, 0);
 		out_demux[0].connectSrc(opNOPs[3], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
@@ -255,20 +260,20 @@ public class ControlUnit extends Node {
 		
 		// connecting registers
 		// 000
-		B.connectSrc(out_demux[out_demux.length-1], 0, BITNESS);
+		B.connectSrc(out_demux[out_demux.length-1], 1, BITNESS);
 		// 100
 		H.connectSrc(out_demux[out_demux.length-1], 0, BITNESS);
 		// 010
-		D.connectSrc(out_demux[out_demux.length-2], 0, BITNESS);
+		D.connectSrc(out_demux[out_demux.length-2], 1, BITNESS);
 		// 110
 		// TODO add memory here
 		D.connectSrc(out_demux[out_demux.length-2], 0, BITNESS);
 		// 001
-		C.connectSrc(out_demux[out_demux.length-3], 0, BITNESS);
+		C.connectSrc(out_demux[out_demux.length-3], 1, BITNESS);
 		// 101
 		L.connectSrc(out_demux[out_demux.length-3], 0, BITNESS);
 		// 011
-		E.connectSrc(out_demux[out_demux.length-4], 0, BITNESS);
+		E.connectSrc(out_demux[out_demux.length-4], 1, BITNESS);
 		// 111
 		A.connectSrc(out_demux[out_demux.length-4], 0, BITNESS);
 		
@@ -356,6 +361,7 @@ public class ControlUnit extends Node {
 	public void propagate(boolean force) {
 		if (!force && !isReady())
 			return;
+		clock.propagate();
 		for (int i = 0; i < BITNESS; i++) {
 			inNOPs_A[i].propagate();
 			inNOPs_B[i].propagate();
@@ -363,7 +369,6 @@ public class ControlUnit extends Node {
 		for (int i = 0; i < BITNESS; i++) {
 			opNOPs[i].propagate();
 		}
-		clock.propagate();
 		super.propagate(true);
 	}
 
