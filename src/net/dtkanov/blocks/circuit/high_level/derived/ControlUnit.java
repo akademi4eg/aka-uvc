@@ -59,18 +59,14 @@ public class ControlUnit extends Node {
 	private byte storage[];
 	/** Fake zero */
 	private ConstantNode zero;
-	/** Fake one */
-	private ConstantNode one;
 	
 	public ControlUnit() {
 		super(null);
 		zero = new ConstantNode(false);
-		one = new ConstantNode(true);
 		storage = new byte[1<<(BITNESS*2)];
 		initInputs();
 		initElements();
 		zero.propagate();
-		one.propagate();
 	}
 	
 	public void loadToStorage(int offset, byte[] data) {
@@ -247,7 +243,7 @@ public class ControlUnit extends Node {
 		final int REG_SEL_CNT = 3;
 		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
 		out_demux[0] = new DeMux();
-		out_demux[0].connectSrc(one, 0, 0);
+		out_demux[0].connectSrc(clock, 0, 0);
 		out_demux[0].connectSrc(opNOPs[3], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
@@ -297,13 +293,13 @@ public class ControlUnit extends Node {
 		}
 		
 		// for initialization
-		A.connectSrc(clock, 0, BITNESS);
-		B.connectSrc(clock, 0, BITNESS);
-		C.connectSrc(clock, 0, BITNESS);
-		D.connectSrc(clock, 0, BITNESS);
-		E.connectSrc(clock, 0, BITNESS);
-		H.connectSrc(clock, 0, BITNESS);
-		L.connectSrc(clock, 0, BITNESS);
+		A.connectSrc(zero, 0, BITNESS);
+		B.connectSrc(zero, 0, BITNESS);
+		C.connectSrc(zero, 0, BITNESS);
+		D.connectSrc(zero, 0, BITNESS);
+		E.connectSrc(zero, 0, BITNESS);
+		H.connectSrc(zero, 0, BITNESS);
+		L.connectSrc(zero, 0, BITNESS);
 	}
 	
 	/** Input: Opcode byte followed by two data bytes. */
@@ -361,7 +357,6 @@ public class ControlUnit extends Node {
 	public void propagate(boolean force) {
 		if (!force && !isReady())
 			return;
-		clock.propagate();
 		for (int i = 0; i < BITNESS; i++) {
 			inNOPs_A[i].propagate();
 			inNOPs_B[i].propagate();
@@ -369,6 +364,7 @@ public class ControlUnit extends Node {
 		for (int i = 0; i < BITNESS; i++) {
 			opNOPs[i].propagate();
 		}
+		clock.propagate();
 		super.propagate(true);
 	}
 
