@@ -34,7 +34,7 @@ public class ControlUnitTest {
 	}
 
 	@Test
-	public void MOVTest() {
+	public void MVITest() {
 		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
 			assertTrue(cu.getRegPCValue(i)==false);
 		}
@@ -118,37 +118,333 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegHValue(7)==true);
 	}
 	
+	@Test
+	public void MOVTest() {
+		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
+			assertTrue(cu.getRegPCValue(i)==false);
+		}
+
+		// MVI C, 10101010b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(false).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(false).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(true).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+		
+		clock.setValue(true).propagate();
+		
+		assertTrue(cu.getRegCValue(0)==false);
+		assertTrue(cu.getRegCValue(1)==true);
+		assertTrue(cu.getRegCValue(2)==false);
+		assertTrue(cu.getRegCValue(3)==true);
+		assertTrue(cu.getRegCValue(4)==false);
+		assertTrue(cu.getRegCValue(5)==true);
+		assertTrue(cu.getRegCValue(6)==false);
+		assertTrue(cu.getRegCValue(7)==true);
+
+		// MVI E, C
+		in_op[0].setValue(true).propagate();
+		in_op[1].setValue(false).propagate();
+		in_op[2].setValue(false).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(true).propagate();
+		in_op[5].setValue(false).propagate();
+		in_op[6].setValue(true).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(true).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(true).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(true).propagate();
+		in_data1[7].setValue(true).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+		
+		clock.setValue(true).propagate();
+
+		assertTrue(cu.getRegEValue(0)==false);
+		assertTrue(cu.getRegEValue(1)==true);
+		assertTrue(cu.getRegEValue(2)==false);
+		assertTrue(cu.getRegEValue(3)==true);
+		assertTrue(cu.getRegEValue(4)==false);
+		assertTrue(cu.getRegEValue(5)==true);
+		assertTrue(cu.getRegEValue(6)==false);
+		assertTrue(cu.getRegEValue(7)==true);
+	}
+	
+	@Test
+	public void ADITest() {
+		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
+			assertTrue(cu.getRegPCValue(i)==false);
+		}
+		
+		// MVI A, 11001011b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(true).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(false).propagate();
+		in_data1[6].setValue(true).propagate();
+		in_data1[7].setValue(true).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+		
+		clock.setValue(true).propagate();
+		
+		assertTrue(cu.getRegAValue(0)==true);
+		assertTrue(cu.getRegAValue(1)==true);
+		assertTrue(cu.getRegAValue(2)==false);
+		assertTrue(cu.getRegAValue(3)==true);
+		assertTrue(cu.getRegAValue(4)==false);
+		assertTrue(cu.getRegAValue(5)==false);
+		assertTrue(cu.getRegAValue(6)==true);
+		assertTrue(cu.getRegAValue(7)==true);
+		
+		// ADI 00100111b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(false).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(false).propagate();
+		in_op[6].setValue(true).propagate();
+		in_op[7].setValue(true).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(true).propagate();
+		in_data1[3].setValue(false).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		// 11001011b + 00100111b = 11110010b
+		assertTrue(cu.getRegAValue(0)==false);
+		assertTrue(cu.getRegAValue(1)==true);
+		assertTrue(cu.getRegAValue(2)==false);
+		assertTrue(cu.getRegAValue(3)==false);
+		assertTrue(cu.getRegAValue(4)==true);
+		assertTrue(cu.getRegAValue(5)==true);
+		assertTrue(cu.getRegAValue(6)==true);
+		assertTrue(cu.getRegAValue(7)==true);
+	}
+	
+	@Test
+	public void ADDTest() {
+		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
+			assertTrue(cu.getRegPCValue(i)==false);
+		}
+		
+		// MVI A, 11001011b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(true).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(false).propagate();
+		in_data1[6].setValue(true).propagate();
+		in_data1[7].setValue(true).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+		
+		clock.setValue(true).propagate();
+		
+		assertTrue(cu.getRegAValue(0)==true);
+		assertTrue(cu.getRegAValue(1)==true);
+		assertTrue(cu.getRegAValue(2)==false);
+		assertTrue(cu.getRegAValue(3)==true);
+		assertTrue(cu.getRegAValue(4)==false);
+		assertTrue(cu.getRegAValue(5)==false);
+		assertTrue(cu.getRegAValue(6)==true);
+		assertTrue(cu.getRegAValue(7)==true);
+		
+		// MVI D, 00101010b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(false).propagate();
+		in_op[4].setValue(true).propagate();
+		in_op[5].setValue(false).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(false).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		assertTrue(cu.getRegDValue(0)==false);
+		assertTrue(cu.getRegDValue(1)==true);
+		assertTrue(cu.getRegDValue(2)==false);
+		assertTrue(cu.getRegDValue(3)==true);
+		assertTrue(cu.getRegDValue(4)==false);
+		assertTrue(cu.getRegDValue(5)==true);
+		assertTrue(cu.getRegDValue(6)==false);
+		assertTrue(cu.getRegDValue(7)==false);
+		
+		// ADD D
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(false).propagate();
+		in_op[3].setValue(false).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(false).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(true).propagate();
+		
+		in_data1[0].setValue(false).propagate();
+		in_data1[1].setValue(false).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(false).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(false).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		// 11001011b + 00101010b = 11110101b
+		assertTrue(cu.getRegAValue(0)==true);
+		assertTrue(cu.getRegAValue(1)==false);
+		assertTrue(cu.getRegAValue(2)==true);
+		assertTrue(cu.getRegAValue(3)==false);
+		assertTrue(cu.getRegAValue(4)==true);
+		assertTrue(cu.getRegAValue(5)==true);
+		assertTrue(cu.getRegAValue(6)==true);
+		assertTrue(cu.getRegAValue(7)==true);
+	}
+	
 	protected void printRegisters() {
 		System.out.print("[A:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegAValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[B:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegBValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[C:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegCValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[D:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegDValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[E:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegEValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[H:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegHValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[L:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getRegLValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[F:");
-		for (int i = 0; i < 8; i++)
+		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getFlag(i)?"1":"0");
 		System.out.print("]");
 		System.out.println();

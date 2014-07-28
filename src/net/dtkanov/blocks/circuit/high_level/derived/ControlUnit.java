@@ -7,6 +7,7 @@ import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.ConstantNode;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.Node;
+import net.dtkanov.blocks.logic.derived.ORNode;
 /** Implements control unit. */
 public class ControlUnit extends Node {
 	/** Bitness of CPU. */
@@ -240,18 +241,26 @@ public class ControlUnit extends Node {
 	}
 	
 	private void initOutputToRegisters() {
+		// It seems like we can take in account last opNOPs bit
+		//   to check if there is a specific destination.
+		ORNode dst_ctrl[] = new ORNode[3];
+		for (int i = 0; i < dst_ctrl.length; i++) {
+			dst_ctrl[i] = new ORNode();
+			dst_ctrl[i].connectSrc(opNOPs[BITNESS-1], 0, 0)
+					   .connectSrc(opNOPs[3+i], 0, 1);
+		}
 		final int REG_SEL_CNT = 3;
 		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
 		out_demux[0] = new DeMux();
 		out_demux[0].connectSrc(clock, 0, 0);
-		out_demux[0].connectSrc(opNOPs[3], 0, 1);
+		out_demux[0].connectSrc(dst_ctrl[0], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
 			// heap-like organization of indexes
 			out_demux[(i-1)/2].connectDst((i+1)%2, out_demux[i], 0);
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
-			out_demux[i].connectSrc(opNOPs[level+3], 0, 1);
+			out_demux[i].connectSrc(dst_ctrl[level], 0, 1);
 		}
 		
 		// connecting registers
@@ -263,7 +272,7 @@ public class ControlUnit extends Node {
 		D.connectSrc(out_demux[out_demux.length-2], 1, BITNESS);
 		// 110
 		// TODO add memory here
-		D.connectSrc(out_demux[out_demux.length-2], 0, BITNESS);
+		//D.connectSrc(out_demux[out_demux.length-2], 0, BITNESS);
 		// 001
 		C.connectSrc(out_demux[out_demux.length-3], 1, BITNESS);
 		// 101
