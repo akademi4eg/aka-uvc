@@ -149,8 +149,8 @@ public class ALU extends Node {
 		compl = new Complementer(bitness);
 		subtr = new MultiAdder(bitness);
 		for (int j = 0; j < bitness; j++) {
-			subtr.connectSrc(inNOPs_A[j], 0, j);
-			compl.connectSrc(inNOPs_B[j], 0, j);
+			subtr.connectSrc(inNOPs_B[j], 0, j);
+			compl.connectSrc(inNOPs_A[j], 0, j);
 			subtr.connectSrc(compl, j, j + bitness);
 			// 1001
 			subtr.connectDst(j, outMUXs[outMUXs.length-5], j);

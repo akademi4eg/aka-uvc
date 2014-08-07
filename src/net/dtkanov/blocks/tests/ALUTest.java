@@ -495,16 +495,16 @@ public class ALUTest {
 		ctrl[1].setValue(false);
 		ctrl[2].setValue(false);
 		ctrl[3].setValue(true);
-		// 0101
-		op1.in(0, true)
-		   .in(1, false)
-		   .in(2, true)
-		   .in(3, false)
-		   .in(4, true);
 		// 0011
-		op2.in(0, true)
+		op1.in(0, true)
 		   .in(1, true)
 		   .in(2, false)
+		   .in(3, false)
+		   .in(4, true);
+		// 0101
+		op2.in(0, true)
+		   .in(1, false)
+		   .in(2, true)
 		   .in(3, false)
 		   .in(4, true);
 		
@@ -517,15 +517,15 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
-		// 0101
-		op1.in(0, true)
-		   .in(1, false)
+		// 0110
+		op1.in(0, false)
+		   .in(1, true)
 		   .in(2, true)
 		   .in(3, false)
 		   .in(4, true);
-		// 0110
-		op2.in(0, false)
-		   .in(1, true)
+		// 0101
+		op2.in(0, true)
+		   .in(1, false)
 		   .in(2, true)
 		   .in(3, false)
 		   .in(4, true);
