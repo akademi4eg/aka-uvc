@@ -32,7 +32,7 @@ bits
 
 arithmetics
 * 0001	ADD (add to numbers)
-* 1001	SUB (subtract two numbers: op2-op1)
+* 1001	SUB (subtract two numbers: op1-op2)
 * 0101	INC (increment)
 * 1101	DEC (decrement)
 
