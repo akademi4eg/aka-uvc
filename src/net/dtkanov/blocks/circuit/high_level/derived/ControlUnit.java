@@ -6,6 +6,7 @@ import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.ConstantNode;
 import net.dtkanov.blocks.logic.NOPNode;
+import net.dtkanov.blocks.logic.NOTNode;
 import net.dtkanov.blocks.logic.Node;
 import net.dtkanov.blocks.logic.derived.ORNode;
 /** Implements control unit. */
@@ -185,11 +186,33 @@ public class ControlUnit extends Node {
 	}
 	
 	private void initInputFromRegisters() {
-		// control byte format: xxDDDSSS or CCCCCSSS
 		final int REG_SEL_CNT = 3;
+		// Control byte format: xxDDDSSS or CCCCCSSS.
+		// Also 00DDD10X means inc/dec, so DDD==SSS.
+		/* Briefly: this code checks if opNOPs pattern
+		 * is not 00XXX10X (not_incdec_comb).
+		 * not_incdec_comb==0 means usage of DDD as source.
+		 * not_incdec_comb==1 means usage of SSS as source. */
+		NOTNode incdec_3rd_bit_inv = new NOTNode();
+		incdec_3rd_bit_inv.connectSrc(opNOPs[2], 0, 0);
+		ORNode not_incdec_pre1 = new ORNode();
+		ORNode not_incdec_pre2 = new ORNode();
+		ORNode not_incdec_comb = new ORNode();
+		not_incdec_pre1.connectSrc(opNOPs[1], 0, 0);
+		not_incdec_pre1.connectSrc(incdec_3rd_bit_inv, 0, 1);
+		not_incdec_pre2.connectSrc(opNOPs[BITNESS-2], 0, 0);
+		not_incdec_pre2.connectSrc(opNOPs[BITNESS-1], 0, 1);
+		not_incdec_comb.connectSrc(not_incdec_pre1, 0, 0);
+		not_incdec_comb.connectSrc(not_incdec_pre2, 0, 1);
+		MultiMux incdec_sel = new MultiMux(REG_SEL_CNT);
+		for (int i = 0; i < 2*REG_SEL_CNT; i++) {
+			incdec_sel.connectSrc(opNOPs[i], 0, i);
+		}
+		incdec_sel.connectSrc(not_incdec_comb, 0, 2*REG_SEL_CNT);
+		
 		ALU_in_mux_A = new MultiMux[(1<<REG_SEL_CNT) - 1];
 		ALU_in_mux_A[0] = new MultiMux(BITNESS);
-		ALU_in_mux_A[0].connectSrc(opNOPs[0], 0, 2*BITNESS);
+		ALU_in_mux_A[0].connectSrc(incdec_sel, 0, 2*BITNESS);
 		for (int i = 1; i < ALU_in_mux_A.length; i++) {
 			ALU_in_mux_A[i] = new MultiMux(BITNESS);
 			// heap-like organization of indexes
@@ -198,7 +221,7 @@ public class ControlUnit extends Node {
 			}
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
-			ALU_in_mux_A[i].connectSrc(opNOPs[level], 0, 2*BITNESS);
+			ALU_in_mux_A[i].connectSrc(incdec_sel, level, 2*BITNESS);
 		}
 		
 		// connecting ALU inputs

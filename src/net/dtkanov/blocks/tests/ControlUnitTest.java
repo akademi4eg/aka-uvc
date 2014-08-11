@@ -1258,6 +1258,178 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(7)==false);
 	}
 	
+	@Test
+	public void INRTest() {
+		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
+			assertTrue(cu.getRegPCValue(i)==false);
+		}
+		
+		// MVI L, 00101001b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(false).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		assertTrue(cu.getRegLValue(0)==true);
+		assertTrue(cu.getRegLValue(1)==false);
+		assertTrue(cu.getRegLValue(2)==false);
+		assertTrue(cu.getRegLValue(3)==true);
+		assertTrue(cu.getRegLValue(4)==false);
+		assertTrue(cu.getRegLValue(5)==true);
+		assertTrue(cu.getRegLValue(6)==false);
+		assertTrue(cu.getRegLValue(7)==false);
+		
+		// INR L
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(false).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(true).propagate();
+		in_data1[3].setValue(false).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		// INR 00101001b = 00101010b
+		assertTrue(cu.getRegLValue(0)==false);
+		assertTrue(cu.getRegLValue(1)==true);
+		assertTrue(cu.getRegLValue(2)==false);
+		assertTrue(cu.getRegLValue(3)==true);
+		assertTrue(cu.getRegLValue(4)==false);
+		assertTrue(cu.getRegLValue(5)==true);
+		assertTrue(cu.getRegLValue(6)==false);
+		assertTrue(cu.getRegLValue(7)==false);
+	}
+	
+	@Test
+	public void DCRTest() {
+		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
+			assertTrue(cu.getRegPCValue(i)==false);
+		}
+		
+		// MVI L, 00101001b
+		in_op[0].setValue(false).propagate();
+		in_op[1].setValue(true).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(false).propagate();
+		in_data1[2].setValue(false).propagate();
+		in_data1[3].setValue(true).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		assertTrue(cu.getRegLValue(0)==true);
+		assertTrue(cu.getRegLValue(1)==false);
+		assertTrue(cu.getRegLValue(2)==false);
+		assertTrue(cu.getRegLValue(3)==true);
+		assertTrue(cu.getRegLValue(4)==false);
+		assertTrue(cu.getRegLValue(5)==true);
+		assertTrue(cu.getRegLValue(6)==false);
+		assertTrue(cu.getRegLValue(7)==false);
+		
+		// INR L
+		in_op[0].setValue(true).propagate();
+		in_op[1].setValue(false).propagate();
+		in_op[2].setValue(true).propagate();
+		in_op[3].setValue(true).propagate();
+		in_op[4].setValue(false).propagate();
+		in_op[5].setValue(true).propagate();
+		in_op[6].setValue(false).propagate();
+		in_op[7].setValue(false).propagate();
+		
+		in_data1[0].setValue(true).propagate();
+		in_data1[1].setValue(true).propagate();
+		in_data1[2].setValue(true).propagate();
+		in_data1[3].setValue(false).propagate();
+		in_data1[4].setValue(false).propagate();
+		in_data1[5].setValue(true).propagate();
+		in_data1[6].setValue(false).propagate();
+		in_data1[7].setValue(false).propagate();
+		
+		in_data2[0].setValue(false).propagate();
+		in_data2[1].setValue(false).propagate();
+		in_data2[2].setValue(false).propagate();
+		in_data2[3].setValue(false).propagate();
+		in_data2[4].setValue(false).propagate();
+		in_data2[5].setValue(false).propagate();
+		in_data2[6].setValue(false).propagate();
+		in_data2[7].setValue(false).propagate();
+
+		clock.setValue(true).propagate();
+
+		// DCR 00101001b = 00101000b
+		assertTrue(cu.getRegLValue(0)==false);
+		assertTrue(cu.getRegLValue(1)==false);
+		assertTrue(cu.getRegLValue(2)==false);
+		assertTrue(cu.getRegLValue(3)==true);
+		assertTrue(cu.getRegLValue(4)==false);
+		assertTrue(cu.getRegLValue(5)==true);
+		assertTrue(cu.getRegLValue(6)==false);
+		assertTrue(cu.getRegLValue(7)==false);
+	}
+	
 	protected void printRegisters() {
 		System.out.print("[A:");
 		for (int i = 7; i >= 0; i--)
