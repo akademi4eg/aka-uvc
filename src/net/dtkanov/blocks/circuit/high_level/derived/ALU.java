@@ -4,16 +4,20 @@ import net.dtkanov.blocks.circuit.MultiAND;
 import net.dtkanov.blocks.circuit.MultiNOT;
 import net.dtkanov.blocks.circuit.MultiOR;
 import net.dtkanov.blocks.circuit.MultiXOR;
+import net.dtkanov.blocks.circuit.Mux;
 import net.dtkanov.blocks.circuit.high_level.AdvancedRotator;
 import net.dtkanov.blocks.circuit.high_level.AdvancedShifter;
 import net.dtkanov.blocks.circuit.high_level.Complementer;
 import net.dtkanov.blocks.circuit.high_level.Incrementer;
 import net.dtkanov.blocks.circuit.high_level.MultiAdder;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
+import net.dtkanov.blocks.logic.ANDNode;
 import net.dtkanov.blocks.logic.ConstantNode;
 import net.dtkanov.blocks.logic.NOPNode;
+import net.dtkanov.blocks.logic.NOTNode;
 import net.dtkanov.blocks.logic.Node;
 import net.dtkanov.blocks.logic.derived.ORNode;
+import net.dtkanov.blocks.logic.derived.XORNode;
 /** Implements 2 operands arithmetic-logic unit. */
 public class ALU extends Node {
 	/** Number of bits representing command selection. */
@@ -24,6 +28,10 @@ public class ALU extends Node {
 	protected Node inNOPs_B[];
 	protected Node opNOPs[];
 	protected Node outMUXs[];
+	protected Node out_z_flag;
+	protected Node out_s_flag;
+	protected Node out_p_flag;
+	protected Node out_c_flag;
 	// operations
 	protected MultiAND opAND;
 	protected MultiOR opOR;
@@ -56,6 +64,10 @@ public class ALU extends Node {
 		for (int i = 0; i < NUM_CMD_BITS; i++) {
 			opNOPs[i] = new NOPNode();
 		}
+		out_z_flag = new NOPNode();
+		out_s_flag = new NOPNode();
+		out_p_flag = new NOPNode();
+		out_c_flag = new NOPNode();
 		outMUXs = new MultiMux[(1<<NUM_CMD_BITS) - 1];
 		outMUXs[0] = new MultiMux(bitness);
 		outMUXs[0].connectSrc(opNOPs[0], 0, 2*bitness);
@@ -70,6 +82,90 @@ public class ALU extends Node {
 			outMUXs[i].connectSrc(opNOPs[level], 0, 2*bitness);
 		}
 		initOperations();
+		initFlags();
+	}
+	
+	protected void initFlags() {
+		// Z-flag. Set if result is zero.
+		ORNode cmpz_out[] = new ORNode[bitness-1];
+		cmpz_out[0] = new ORNode();
+		cmpz_out[0].connectSrc(outMUXs[0], 0, 0);
+		cmpz_out[0].connectSrc(outMUXs[0], 1, 1);
+		for (int j = 1; j < bitness-1; j++) {
+			cmpz_out[j] = new ORNode();
+			cmpz_out[j].connectSrc(outMUXs[0], j+1, 0);
+			cmpz_out[j].connectSrc(cmpz_out[j-1], 0, 1);
+		}
+		NOTNode cmp_neg = new NOTNode();
+		cmp_neg.connectSrc(cmpz_out[bitness-2], 0, 0);
+		cmp_neg.connectDst(0, out_z_flag, 0);
+		
+		// S-flag. Set if result is negative.
+		out_s_flag.connectSrc(outMUXs[0], bitness-1, 0);
+		
+		// P-flag. Set if number of 1s in result is even, e.g. 0110.
+		// TODO. What is a proper value for zero result of operation?
+		XORNode ones_out[] = new XORNode[bitness-1];
+		ones_out[0] = new XORNode();
+		ones_out[0].connectSrc(outMUXs[0], 0, 0);
+		ones_out[0].connectSrc(outMUXs[0], 1, 1);
+		for (int j = 1; j < bitness-1; j++) {
+			ones_out[j] = new XORNode();
+			ones_out[j].connectSrc(outMUXs[0], j+1, 0);
+			ones_out[j].connectSrc(ones_out[j-1], 0, 1);
+		}
+		NOTNode ones_neg = new NOTNode();
+		ones_neg.connectSrc(ones_out[bitness-2], 0, 0);
+		ones_neg.connectDst(0, out_p_flag, 0);
+		
+		// C-flag. Set if it was set
+		// in last add/sub/rotate/shift/inc/dec ops. Zero otherwise.
+		Mux c_muxs[] = new Mux[7];
+		c_muxs[0] = new Mux();
+		c_muxs[0].connectSrc(sh_right, bitness, 0);
+		c_muxs[0].connectSrc(sh_left, bitness, 1);
+		c_muxs[0].connectSrc(opNOPs[3], 0, 2);
+		
+		c_muxs[1] = new Mux();
+		c_muxs[1].connectSrc(outMUXs[0], bitness-1, 0); // rotate right
+		c_muxs[1].connectSrc(outMUXs[0], 0, 1); // rotate left
+		c_muxs[1].connectSrc(opNOPs[3], 0, 2);
+		
+		c_muxs[2] = new Mux();
+		NOTNode subtr_neg = new NOTNode();
+		subtr_neg.connectSrc(subtr, bitness, 0);
+		c_muxs[2].connectSrc(subtr_neg, 0, 0);
+		c_muxs[2].connectSrc(adder, bitness, 1);
+		c_muxs[2].connectSrc(opNOPs[3], 0, 2);
+		
+		c_muxs[3] = new Mux();
+		c_muxs[3].connectSrc(inc_dec, bitness, 0);
+		c_muxs[3].connectSrc(inc, bitness, 1);
+		c_muxs[3].connectSrc(opNOPs[3], 0, 2);
+		
+		c_muxs[4] = new Mux();
+		c_muxs[4].connectSrc(c_muxs[1], bitness, 0);
+		c_muxs[4].connectSrc(c_muxs[0], bitness, 1);
+		c_muxs[4].connectSrc(opNOPs[2], 0, 2);
+		
+		c_muxs[5] = new Mux();
+		c_muxs[5].connectSrc(c_muxs[3], bitness, 0);
+		c_muxs[5].connectSrc(c_muxs[2], bitness, 1);
+		c_muxs[5].connectSrc(opNOPs[2], 0, 2);
+		
+		c_muxs[6] = new Mux();
+		c_muxs[6].connectSrc(c_muxs[4], bitness, 0);
+		c_muxs[6].connectSrc(c_muxs[5], bitness, 1);
+		c_muxs[6].connectSrc(opNOPs[1], 0, 2);
+		
+		XORNode is_c = new XORNode();
+		is_c.connectSrc(opNOPs[0], 0, 0);
+		is_c.connectSrc(opNOPs[1], 0, 1);
+		
+		ANDNode res_c = new ANDNode();
+		res_c.connectSrc(is_c, 0, 0);
+		res_c.connectSrc(c_muxs[6], 0, 1);
+		out_c_flag.connectSrc(res_c, 0, 0);
 	}
 	
 	protected void initOperations() {
@@ -220,7 +316,16 @@ public class ALU extends Node {
 
 	@Override
 	public boolean out(int index) {
-		return outMUXs[0].out(index);
+		if (index < bitness)
+			return outMUXs[0].out(index);
+		else if (index == bitness) // Z-flag
+			return out_z_flag.out(0);
+		else if (index == bitness + 1) // S-flag
+			return out_s_flag.out(0);
+		else if (index == bitness + 2) // P-flag
+			return out_p_flag.out(0);
+		else // C-flag
+			return out_c_flag.out(0);
 	}
 
 	@Override

@@ -60,6 +60,14 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		op1.in(0, false)
 		   .in(1, true)
@@ -81,6 +89,12 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==true);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// C-flag
+		assertTrue(alu.out(7)==false);
 	}
 	
 	@Test
@@ -110,6 +124,14 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==true);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		op1.in(0, false)
 		   .in(1, true)
@@ -131,6 +153,14 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==true);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 	}
 
 	@Test
@@ -160,6 +190,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==true);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==true);
 		
 		op1.in(0, false)
 		   .in(1, true)
@@ -181,6 +215,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==true);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==false);
 	}
 	
 	@Test
@@ -210,6 +248,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==true);
 		
 		op1.in(0, false)
 		   .in(1, true)
@@ -231,6 +273,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// P-flag
+		assertTrue(alu.out(6)==true);
 	}
 	
 	@Test
@@ -260,6 +306,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==true);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// SHL 1010b, 1
 		op1.in(0, false)
@@ -282,6 +332,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// S-flag
+		assertTrue(alu.out(5)==alu.out(3));
+		// C-flag
+		assertTrue(alu.out(7)==true);
 	}
 	
 	@Test
@@ -311,6 +365,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// SHR 1010b, 1
 		op1.in(0, false)
@@ -333,6 +389,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 	}
 	
 	@Test
@@ -362,6 +420,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==true);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// ROL 1010b, 1
 		op1.in(0, false)
@@ -384,6 +444,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==true);
 	}
 	
 	@Test
@@ -413,6 +475,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// ROR 1010b, 1
 		op1.in(0, false)
@@ -435,6 +499,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 	}
 	
 	@Test
@@ -487,6 +553,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==true);
 	}
 	
 	@Test
@@ -517,6 +585,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		// 0110
 		op1.in(0, false)
 		   .in(1, true)
@@ -539,6 +611,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==true);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// C-flag
+		assertTrue(alu.out(7)==true);
 	}
 	
 	@Test
@@ -568,6 +644,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==true);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// INC 1111b
 		op1.in(0, true)
@@ -590,6 +670,10 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==true);
+		// C-flag
+		assertTrue(alu.out(7)==true);
 	}
 	
 	@Test
@@ -619,6 +703,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 		
 		// DEC 1111b
 		op1.in(0, true)
@@ -641,6 +727,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==true);
 		assertTrue(alu.out(2)==true);
 		assertTrue(alu.out(3)==true);
+		// C-flag
+		assertTrue(alu.out(7)==false);
 	}
 	
 	@Test
@@ -670,6 +758,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
 		
 		// CMPNZ 0000b
 		op1.in(0, false)
@@ -692,6 +782,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==true);
 	}
 	
 	@Test
@@ -721,6 +813,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==true);
 		
 		// CMPNZ 1010b
 		op1.in(0, false)
@@ -743,6 +837,8 @@ public class ALUTest {
 		assertTrue(alu.out(1)==false);
 		assertTrue(alu.out(2)==false);
 		assertTrue(alu.out(3)==false);
+		// Z-flag
+		assertTrue(alu.out(4)==false);
 	}
 	
 	@Test
