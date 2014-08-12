@@ -2,8 +2,10 @@ package net.dtkanov.blocks.circuit.high_level.derived;
 
 import net.dtkanov.blocks.circuit.DeMux;
 import net.dtkanov.blocks.circuit.LookUp;
+import net.dtkanov.blocks.circuit.MultiNOT;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.circuit.high_level.Register;
+import net.dtkanov.blocks.logic.ANDNode;
 import net.dtkanov.blocks.logic.ConstantNode;
 import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.NOTNode;
@@ -272,18 +274,39 @@ public class ControlUnit extends Node {
 			dst_ctrl[i].connectSrc(opNOPs[BITNESS-1], 0, 0)
 					   .connectSrc(opNOPs[3+i], 0, 1);
 		}
+		// Also 000XX111 pattern (rotations) should set A as destanation.
+		ORNode dst_ctrl_rot[] = new ORNode[3];
+		MultiNOT rev_high_3bit = new MultiNOT(3);
+		ANDNode comb_rot_ctrl[] = new ANDNode[5];
+		for (int i = 0; i < 3; i++) {
+			rev_high_3bit.connectSrc(opNOPs[BITNESS-1-i], 0, i);
+			comb_rot_ctrl[i] = new ANDNode();
+			comb_rot_ctrl[i].connectSrc(opNOPs[i], 0, 0);
+			comb_rot_ctrl[i].connectSrc(rev_high_3bit, i, 1);
+		}
+		comb_rot_ctrl[3] = new ANDNode();
+		comb_rot_ctrl[3].connectSrc(comb_rot_ctrl[0], 0, 0);
+		comb_rot_ctrl[3].connectSrc(comb_rot_ctrl[1], 0, 1);
+		comb_rot_ctrl[4] = new ANDNode();
+		comb_rot_ctrl[4].connectSrc(comb_rot_ctrl[2], 0, 0);
+		comb_rot_ctrl[4].connectSrc(comb_rot_ctrl[3], 0, 1);
+		for (int i = 0; i < dst_ctrl_rot.length; i++) {
+			dst_ctrl_rot[i] = new ORNode();
+			dst_ctrl_rot[i].connectSrc(dst_ctrl[i], 0, 0)
+			   			   .connectSrc(comb_rot_ctrl[3], 0, 1);
+		}
 		final int REG_SEL_CNT = 3;
 		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
 		out_demux[0] = new DeMux();
 		out_demux[0].connectSrc(clock, 0, 0);
-		out_demux[0].connectSrc(dst_ctrl[0], 0, 1);
+		out_demux[0].connectSrc(dst_ctrl_rot[0], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
 			// heap-like organization of indexes
 			out_demux[(i-1)/2].connectDst((i+1)%2, out_demux[i], 0);
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
-			out_demux[i].connectSrc(dst_ctrl[level], 0, 1);
+			out_demux[i].connectSrc(dst_ctrl_rot[level], 0, 1);
 		}
 		
 		// connecting registers
