@@ -22,6 +22,10 @@ import net.dtkanov.blocks.logic.derived.XORNode;
 public class ALU extends Node {
 	/** Number of bits representing command selection. */
 	public static final int NUM_CMD_BITS = 4; 
+	public static final int Z_FLAG_SHIFT = 0;
+	public static final int S_FLAG_SHIFT = 1;
+	public static final int P_FLAG_SHIFT = 2;
+	public static final int C_FLAG_SHIFT = 3;
 	
 	protected int bitness;
 	protected Node inNOPs_A[];

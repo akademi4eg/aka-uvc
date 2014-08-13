@@ -17,8 +17,12 @@ public class ControlUnit extends Node {
 	public static int BITNESS = 8;
 	/** Carry-flag index. */
 	public static int C_FLAG = 0;
+	/** Flag is not used. */
+	public static int F1_FLAG = 1;
 	/** Parity-flag index. */
 	public static int P_FLAG = 2;
+	/** Flag is not used. */
+	public static int F3_FLAG = 3;
 	/** Aux.carry-flag index. */
 	public static int H_FLAG = 4;
 	/** Interrupt-flag index. */
@@ -327,6 +331,8 @@ public class ControlUnit extends Node {
 		E.connectSrc(out_demux[out_demux.length-4], 1, BITNESS);
 		// 111
 		A.connectSrc(out_demux[out_demux.length-4], 0, BITNESS);
+		// flags
+		F.connectSrc(clock, 0, BITNESS);
 		
 		// connect ALU output
 		for (int i = 0; i < BITNESS; i++) {
@@ -345,7 +351,18 @@ public class ControlUnit extends Node {
 			E.connectSrc(zero, 0, i);
 			H.connectSrc(zero, 0, i);
 			L.connectSrc(zero, 0, i);
+			F.connectSrc(zero, 0, i);
 		}
+		// TODO prevent flags change for mov, inc, dec etc.
+		F.connectSrc(alu, BITNESS+ALU.C_FLAG_SHIFT, C_FLAG);
+		F.connectSrc(alu, BITNESS+ALU.Z_FLAG_SHIFT, Z_FLAG);
+		F.connectSrc(alu, BITNESS+ALU.S_FLAG_SHIFT, S_FLAG);
+		F.connectSrc(alu, BITNESS+ALU.P_FLAG_SHIFT, P_FLAG);
+		// TODO implement A-flag (H-flag)
+		F.connectSrc(clock, 0, H_FLAG);
+		F.connectSrc(clock, 0, I_FLAG);
+		F.connectSrc(clock, 0, F3_FLAG);
+		F.connectSrc(clock, 0, F1_FLAG);
 		
 		// for initialization
 		A.connectSrc(zero, 0, BITNESS);
@@ -355,6 +372,7 @@ public class ControlUnit extends Node {
 		E.connectSrc(zero, 0, BITNESS);
 		H.connectSrc(zero, 0, BITNESS);
 		L.connectSrc(zero, 0, BITNESS);
+		F.connectSrc(zero, 0, BITNESS);
 	}
 	
 	/** Input: Opcode byte followed by two data bytes. */
