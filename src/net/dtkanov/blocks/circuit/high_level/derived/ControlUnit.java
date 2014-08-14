@@ -67,6 +67,8 @@ public class ControlUnit extends Node {
 	private byte storage[];
 	/** Fake zero */
 	private ConstantNode zero;
+	/** Checks if it is rotations instruction. */
+	ANDNode comb_rot_ctrl[];
 	
 	public ControlUnit() {
 		super(null);
@@ -187,8 +189,8 @@ public class ControlUnit extends Node {
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		mem_alu_in = new LookUp(BITNESS*2, storage);// 16-bit addressing
 		///////////////////////////////////////////////////////////////////////
-		initInputFromRegisters();
 		initOutputToRegisters();
+		initInputFromRegisters();
 	}
 	
 	private void initInputFromRegisters() {
@@ -231,9 +233,22 @@ public class ControlUnit extends Node {
 		}
 		
 		// connecting ALU inputs
+		// For rotations we should pass 1 as second op for ALU.
+		// In other cases it should be A register.
+		NOTNode not_rot = new NOTNode();
+		not_rot.connectSrc(comb_rot_ctrl[4], 0, 0);
+		for (int j = 1; j < BITNESS; j++) {
+			ANDNode temp_con = new ANDNode();
+			temp_con.connectSrc(not_rot, 0, 0);
+			temp_con.connectSrc(A, j, 1);
+			temp_con.connectDst(0, alu, j+BITNESS);
+		}
+		ORNode temp_con = new ORNode();
+		temp_con.connectSrc(comb_rot_ctrl[4], 0, 0);
+		temp_con.connectSrc(A, 0, 1);
+		temp_con.connectDst(0, alu, BITNESS);
 		for (int j = 0; j < BITNESS; j++) {
 			ALU_in_mux_A[0].connectDst(j, alu, j);
-			A.connectDst(j, alu, j+BITNESS);
 		}
 		for (int j = 0; j < BITNESS; j++) {
 			alu_ctrl.connectSrc(opNOPs[j], 0, j);
@@ -281,7 +296,7 @@ public class ControlUnit extends Node {
 		// Also 000XX111 pattern (rotations) should set A as destanation.
 		ORNode dst_ctrl_rot[] = new ORNode[3];
 		MultiNOT rev_high_3bit = new MultiNOT(3);
-		ANDNode comb_rot_ctrl[] = new ANDNode[5];
+		comb_rot_ctrl = new ANDNode[5];
 		for (int i = 0; i < 3; i++) {
 			rev_high_3bit.connectSrc(opNOPs[BITNESS-1-i], 0, i);
 			comb_rot_ctrl[i] = new ANDNode();
@@ -297,7 +312,7 @@ public class ControlUnit extends Node {
 		for (int i = 0; i < dst_ctrl_rot.length; i++) {
 			dst_ctrl_rot[i] = new ORNode();
 			dst_ctrl_rot[i].connectSrc(dst_ctrl[i], 0, 0)
-			   			   .connectSrc(comb_rot_ctrl[3], 0, 1);
+			   			   .connectSrc(comb_rot_ctrl[4], 0, 1);
 		}
 		final int REG_SEL_CNT = 3;
 		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];

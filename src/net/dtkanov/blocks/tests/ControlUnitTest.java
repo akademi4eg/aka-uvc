@@ -287,6 +287,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==true);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -412,6 +416,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==true);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -498,6 +506,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==false);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -623,6 +635,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==false);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -709,6 +725,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==false);
 		assertTrue(cu.getRegAValue(6)==false);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -834,6 +854,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==false);
 		assertTrue(cu.getRegAValue(6)==false);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -920,6 +944,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -1045,6 +1073,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -1131,6 +1163,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -1256,6 +1292,10 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(5)==true);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	@Test
@@ -1342,6 +1382,9 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegLValue(5)==true);
 		assertTrue(cu.getRegLValue(6)==false);
 		assertTrue(cu.getRegLValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
 	}
 	
 	@Test
@@ -1428,6 +1471,9 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegLValue(5)==true);
 		assertTrue(cu.getRegLValue(6)==false);
 		assertTrue(cu.getRegLValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 	}
 	
 	@Test
@@ -1436,7 +1482,7 @@ public class ControlUnitTest {
 			assertTrue(cu.getRegPCValue(i)==false);
 		}
 		
-		// MVI A, 10101001b
+		// MVI A, 10101000b
 		in_op[0].setValue(false).propagate();
 		in_op[1].setValue(true).propagate();
 		in_op[2].setValue(true).propagate();
@@ -1446,7 +1492,7 @@ public class ControlUnitTest {
 		in_op[6].setValue(false).propagate();
 		in_op[7].setValue(false).propagate();
 		
-		in_data1[0].setValue(true).propagate();
+		in_data1[0].setValue(false).propagate();
 		in_data1[1].setValue(false).propagate();
 		in_data1[2].setValue(false).propagate();
 		in_data1[3].setValue(true).propagate();
@@ -1466,7 +1512,7 @@ public class ControlUnitTest {
 
 		clock.setValue(true).propagate();
 
-		assertTrue(cu.getRegAValue(0)==true);
+		assertTrue(cu.getRegAValue(0)==false);
 		assertTrue(cu.getRegAValue(1)==false);
 		assertTrue(cu.getRegAValue(2)==false);
 		assertTrue(cu.getRegAValue(3)==true);
@@ -1485,12 +1531,12 @@ public class ControlUnitTest {
 		in_op[6].setValue(false).propagate();
 		in_op[7].setValue(false).propagate();
 		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
+		in_data1[0].setValue(false).propagate();
+		in_data1[1].setValue(false).propagate();
+		in_data1[2].setValue(false).propagate();
 		in_data1[3].setValue(false).propagate();
 		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
+		in_data1[5].setValue(false).propagate();
 		in_data1[6].setValue(false).propagate();
 		in_data1[7].setValue(false).propagate();
 		
@@ -1505,15 +1551,16 @@ public class ControlUnitTest {
 		
 		clock.setValue(true).propagate();
 		
-		// 01010011b
+		// 01010001b
 		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
+		assertTrue(cu.getRegAValue(1)==false);
 		assertTrue(cu.getRegAValue(2)==false);
 		assertTrue(cu.getRegAValue(3)==false);
 		assertTrue(cu.getRegAValue(4)==true);
 		assertTrue(cu.getRegAValue(5)==false);
 		assertTrue(cu.getRegAValue(6)==true);
 		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
 	}
 	
 	@Test
@@ -1522,7 +1569,7 @@ public class ControlUnitTest {
 			assertTrue(cu.getRegPCValue(i)==false);
 		}
 		
-		// MVI A, 10101001b
+		// MVI A, 10101000b
 		in_op[0].setValue(false).propagate();
 		in_op[1].setValue(true).propagate();
 		in_op[2].setValue(true).propagate();
@@ -1532,7 +1579,7 @@ public class ControlUnitTest {
 		in_op[6].setValue(false).propagate();
 		in_op[7].setValue(false).propagate();
 		
-		in_data1[0].setValue(true).propagate();
+		in_data1[0].setValue(false).propagate();
 		in_data1[1].setValue(false).propagate();
 		in_data1[2].setValue(false).propagate();
 		in_data1[3].setValue(true).propagate();
@@ -1552,7 +1599,7 @@ public class ControlUnitTest {
 
 		clock.setValue(true).propagate();
 
-		assertTrue(cu.getRegAValue(0)==true);
+		assertTrue(cu.getRegAValue(0)==false);
 		assertTrue(cu.getRegAValue(1)==false);
 		assertTrue(cu.getRegAValue(2)==false);
 		assertTrue(cu.getRegAValue(3)==true);
@@ -1591,7 +1638,7 @@ public class ControlUnitTest {
 		
 		clock.setValue(true).propagate();
 		
-		// 11010100b
+		// 01010100b
 		assertTrue(cu.getRegAValue(0)==false);
 		assertTrue(cu.getRegAValue(1)==false);
 		assertTrue(cu.getRegAValue(2)==true);
@@ -1599,7 +1646,8 @@ public class ControlUnitTest {
 		assertTrue(cu.getRegAValue(4)==true);
 		assertTrue(cu.getRegAValue(5)==false);
 		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==true);
+		assertTrue(cu.getRegAValue(7)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
 	}
 	
 	protected void printRegisters() {
