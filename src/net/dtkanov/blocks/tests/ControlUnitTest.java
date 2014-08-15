@@ -15,6 +15,14 @@ public class ControlUnitTest {
 	private ConstantNode in_data2[];
 	private ConstantNode clock;
 	
+	public static final int REG_A = 0b111;
+	public static final int REG_B = 0b000;
+	public static final int REG_C = 0b001;
+	public static final int REG_D = 0b010;
+	public static final int REG_E = 0b011;
+	public static final int REG_H = 0b100;
+	public static final int REG_L = 0b101;
+	
 	@Before
 	public void setUp() throws Exception {
 		cu = new ControlUnit();
@@ -38,84 +46,10 @@ public class ControlUnitTest {
 		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
 			assertTrue(cu.getRegPCValue(i)==false);
 		}
-		
 		// MVI B, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegBValue(0)==true);
-		assertTrue(cu.getRegBValue(1)==true);
-		assertTrue(cu.getRegBValue(2)==false);
-		assertTrue(cu.getRegBValue(3)==true);
-		assertTrue(cu.getRegBValue(4)==false);
-		assertTrue(cu.getRegBValue(5)==false);
-		assertTrue(cu.getRegBValue(6)==true);
-		assertTrue(cu.getRegBValue(7)==false);
-		
+		moveToReg(REG_B, 0b01001011);
 		// MVI H, 11111111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(true).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegHValue(0)==true);
-		assertTrue(cu.getRegHValue(1)==true);
-		assertTrue(cu.getRegHValue(2)==true);
-		assertTrue(cu.getRegHValue(3)==true);
-		assertTrue(cu.getRegHValue(4)==true);
-		assertTrue(cu.getRegHValue(5)==true);
-		assertTrue(cu.getRegHValue(6)==true);
-		assertTrue(cu.getRegHValue(7)==true);
+		moveToReg(REG_H, 0b11111111);
 	}
 	
 	@Test
@@ -125,82 +59,12 @@ public class ControlUnitTest {
 		}
 
 		// MVI C, 10101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegCValue(0)==false);
-		assertTrue(cu.getRegCValue(1)==true);
-		assertTrue(cu.getRegCValue(2)==false);
-		assertTrue(cu.getRegCValue(3)==true);
-		assertTrue(cu.getRegCValue(4)==false);
-		assertTrue(cu.getRegCValue(5)==true);
-		assertTrue(cu.getRegCValue(6)==false);
-		assertTrue(cu.getRegCValue(7)==true);
+		moveToReg(REG_C, 0b10101010);
 
 		// MVI E, C
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(false).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(true).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegEValue(0)==false);
-		assertTrue(cu.getRegEValue(1)==true);
-		assertTrue(cu.getRegEValue(2)==false);
-		assertTrue(cu.getRegEValue(3)==true);
-		assertTrue(cu.getRegEValue(4)==false);
-		assertTrue(cu.getRegEValue(5)==true);
-		assertTrue(cu.getRegEValue(6)==false);
-		assertTrue(cu.getRegEValue(7)==true);
+		setOperationAndPropagete(0b01011001);
+		setValuesAndPropagete(0b11111111, 0);
+		checkReg(REG_E, 0b10101010);
 	}
 	
 	@Test
@@ -210,83 +74,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 11001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==true);
+		moveToReg(REG_A, 0b11001011);
 		
 		// ADI 00100111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(true).propagate();
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
 		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
 		// 11001011b + 00100111b = 11110010b
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==true);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==true);
+		checkReg(REG_A, 0b11110010);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
@@ -300,122 +95,17 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 11001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==true);
+		moveToReg(0b111, 0b11001011);
 		
 		// MVI D, 00101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegDValue(0)==false);
-		assertTrue(cu.getRegDValue(1)==true);
-		assertTrue(cu.getRegDValue(2)==false);
-		assertTrue(cu.getRegDValue(3)==true);
-		assertTrue(cu.getRegDValue(4)==false);
-		assertTrue(cu.getRegDValue(5)==true);
-		assertTrue(cu.getRegDValue(6)==false);
-		assertTrue(cu.getRegDValue(7)==false);
+		moveToReg(0b010, 0b00101010);
 		
 		// ADD D
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(false).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b10000010);
+		setValuesAndPropagete(0, 0);
 
 		// 11001011b + 00101010b = 11110101b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==true);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==true);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==true);
+		checkReg(REG_A, 0b11110101);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -429,83 +119,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// SUI 00100111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b11010110);	
+		setValuesAndPropagete(0b00100111, 0);
 
 		// 01001011b - 00100111b = 00100100b
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==true);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b00100100);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -519,122 +140,17 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// MVI D, 00101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegDValue(0)==false);
-		assertTrue(cu.getRegDValue(1)==true);
-		assertTrue(cu.getRegDValue(2)==false);
-		assertTrue(cu.getRegDValue(3)==true);
-		assertTrue(cu.getRegDValue(4)==false);
-		assertTrue(cu.getRegDValue(5)==true);
-		assertTrue(cu.getRegDValue(6)==false);
-		assertTrue(cu.getRegDValue(7)==false);
+		moveToReg(0b010, 0b00101010);
 		
 		// SUB D
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(false).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b10010010);
+		setValuesAndPropagete(0, 0);
 
 		// 01001011b - 00101010b = 00100001b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b00100001);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -648,83 +164,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// ANI 00100111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(true).propagate();
+		setOperationAndPropagete(0b11100110);
+		setValuesAndPropagete(0b00100111, 0);
 		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
 		// 01001011b & 00100111b = 00000011b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b00000011);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -738,122 +185,17 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// MVI C, 00101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegCValue(0)==false);
-		assertTrue(cu.getRegCValue(1)==true);
-		assertTrue(cu.getRegCValue(2)==false);
-		assertTrue(cu.getRegCValue(3)==true);
-		assertTrue(cu.getRegCValue(4)==false);
-		assertTrue(cu.getRegCValue(5)==true);
-		assertTrue(cu.getRegCValue(6)==false);
-		assertTrue(cu.getRegCValue(7)==false);
+		moveToReg(0b001, 0b00101010);
 		
 		// ANA C
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(false).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b10100001);
+		setValuesAndPropagete(0, 0);
 
 		// 01001011b & 00101010b = 00001010b
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b00001010);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -867,83 +209,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// ORI 00100111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b11110110);
+		setValuesAndPropagete(0b00100111, 0);
 
 		// 01001011b | 00100111b = 01101111b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==true);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b01101111);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -957,122 +230,17 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// MVI L, 00101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegLValue(0)==false);
-		assertTrue(cu.getRegLValue(1)==true);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
+		moveToReg(0b101, 0b00101010);
 		
 		// ORA L
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b10110101);
+		setValuesAndPropagete(0, 0);
 
 		// 01001011b | 00101010b = 01101011b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b01101011);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
@@ -1086,83 +254,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// XRI 00100111b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(true).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b11101110);
+		setValuesAndPropagete(0b00100111, 0);
 
 		// 01001011b XOR 00100111b = 01101100b
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==true);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b01101100);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -1176,122 +275,17 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 01001011b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(true).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==true);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		moveToReg(0b111, 0b01001011);
 		
 		// MVI L, 00101010b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegLValue(0)==false);
-		assertTrue(cu.getRegLValue(1)==true);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
+		moveToReg(0b101, 0b00101010);
 		
 		// XRA L
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(true).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b10101101);
+		setValuesAndPropagete(0, 0);
 
 		// 01001011b XOR 00101010b = 01100001b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b01100001);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
@@ -1305,83 +299,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI L, 00101001b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegLValue(0)==true);
-		assertTrue(cu.getRegLValue(1)==false);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
+		moveToReg(0b101, 0b00101001);
 		
 		// INR L
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b00101100);
+		setValuesAndPropagete(0, 0);
 
 		// INR 00101001b = 00101010b
-		assertTrue(cu.getRegLValue(0)==false);
-		assertTrue(cu.getRegLValue(1)==true);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
+		checkReg(REG_L, 0b00101010);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
@@ -1394,83 +319,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI L, 00101001b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
+		moveToReg(0b101, 0b00101001);
 		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegLValue(0)==true);
-		assertTrue(cu.getRegLValue(1)==false);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
-		
-		// INR L
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(false).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
+		// DCR L
+		setOperationAndPropagete(0b00101101);
+		setValuesAndPropagete(0, 0);
 
 		// DCR 00101001b = 00101000b
-		assertTrue(cu.getRegLValue(0)==false);
-		assertTrue(cu.getRegLValue(1)==false);
-		assertTrue(cu.getRegLValue(2)==false);
-		assertTrue(cu.getRegLValue(3)==true);
-		assertTrue(cu.getRegLValue(4)==false);
-		assertTrue(cu.getRegLValue(5)==true);
-		assertTrue(cu.getRegLValue(6)==false);
-		assertTrue(cu.getRegLValue(7)==false);
+		checkReg(REG_L, 0b00101000);
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
@@ -1483,83 +339,14 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 10101000b
-		in_op[0].setValue(false).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
-		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==true);
+		moveToReg(0b111, 0b10101000);
 		
 		// RLC
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(false).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(false).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
+		setOperationAndPropagete(0b00000111);
+		setValuesAndPropagete(0, 0);
 		
 		// 01010001b
-		assertTrue(cu.getRegAValue(0)==true);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==true);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
+		checkReg(REG_A, 0b01010001);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
 	}
 	
@@ -1570,84 +357,75 @@ public class ControlUnitTest {
 		}
 		
 		// MVI A, 10101000b
+		moveToReg(0b111, 0b10101000);
+		
+		// RRC
+		setOperationAndPropagete(0b00001111);
+		setValuesAndPropagete(0, 0);
+		
+		// 01010100b
+		checkReg(REG_A, 0b01010100);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+	}
+	
+	protected void moveToReg(int reg_code, int val) {
+		// MVI REG, VAL
 		in_op[0].setValue(false).propagate();
 		in_op[1].setValue(true).propagate();
 		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(true).propagate();
-		in_op[5].setValue(true).propagate();
+		in_op[3].setValue((reg_code>>0 & 1) == 1).propagate();
+		in_op[4].setValue((reg_code>>1 & 1) == 1).propagate();
+		in_op[5].setValue((reg_code>>2 & 1) == 1).propagate();
 		in_op[6].setValue(false).propagate();
 		in_op[7].setValue(false).propagate();
 		
-		in_data1[0].setValue(false).propagate();
-		in_data1[1].setValue(false).propagate();
-		in_data1[2].setValue(false).propagate();
-		in_data1[3].setValue(true).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(true).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-
+		setValuesAndPropagete(val, 0);
+		checkReg(reg_code, val);
+	}
+	
+	protected void setOperationAndPropagete(int op) {
+		for (int i = 0; i < 8; i++) {
+			in_op[i].setValue((op & 1<<i) == 1<<i).propagate();
+		}
+	}
+	
+	protected void setValuesAndPropagete(int val1, int val2) {
+		for (int i = 0; i < 8; i++) {
+			in_data1[i].setValue((val1 & 1<<i) == 1<<i).propagate();
+			in_data2[i].setValue((val2 & 1<<i) == 1<<i).propagate();
+		}
 		clock.setValue(true).propagate();
-
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==false);
-		assertTrue(cu.getRegAValue(3)==true);
-		assertTrue(cu.getRegAValue(4)==false);
-		assertTrue(cu.getRegAValue(5)==true);
-		assertTrue(cu.getRegAValue(6)==false);
-		assertTrue(cu.getRegAValue(7)==true);
-		
-		// RRC
-		in_op[0].setValue(true).propagate();
-		in_op[1].setValue(true).propagate();
-		in_op[2].setValue(true).propagate();
-		in_op[3].setValue(true).propagate();
-		in_op[4].setValue(false).propagate();
-		in_op[5].setValue(false).propagate();
-		in_op[6].setValue(false).propagate();
-		in_op[7].setValue(false).propagate();
-		
-		in_data1[0].setValue(true).propagate();
-		in_data1[1].setValue(true).propagate();
-		in_data1[2].setValue(true).propagate();
-		in_data1[3].setValue(false).propagate();
-		in_data1[4].setValue(false).propagate();
-		in_data1[5].setValue(true).propagate();
-		in_data1[6].setValue(false).propagate();
-		in_data1[7].setValue(false).propagate();
-		
-		in_data2[0].setValue(false).propagate();
-		in_data2[1].setValue(false).propagate();
-		in_data2[2].setValue(false).propagate();
-		in_data2[3].setValue(false).propagate();
-		in_data2[4].setValue(false).propagate();
-		in_data2[5].setValue(false).propagate();
-		in_data2[6].setValue(false).propagate();
-		in_data2[7].setValue(false).propagate();
-		
-		clock.setValue(true).propagate();
-		
-		// 01010100b
-		assertTrue(cu.getRegAValue(0)==false);
-		assertTrue(cu.getRegAValue(1)==false);
-		assertTrue(cu.getRegAValue(2)==true);
-		assertTrue(cu.getRegAValue(3)==false);
-		assertTrue(cu.getRegAValue(4)==true);
-		assertTrue(cu.getRegAValue(5)==false);
-		assertTrue(cu.getRegAValue(6)==true);
-		assertTrue(cu.getRegAValue(7)==false);
-		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+	}
+	
+	protected void checkReg(int reg_code, int val) {
+		for (int i = 0; i < 8; i++) {
+			switch (reg_code) {
+				case 7:
+					assertTrue(cu.getRegAValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 0:
+					assertTrue(cu.getRegBValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 1:
+					assertTrue(cu.getRegCValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 2:
+					assertTrue(cu.getRegDValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 3:
+					assertTrue(cu.getRegEValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 4:
+					assertTrue(cu.getRegHValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				case 5:
+					assertTrue(cu.getRegLValue(i)==((val & 1<<i) == 1<<i));
+					break;
+				default:
+					assertTrue(false);
+					break;
+			}
+		}
 	}
 	
 	protected void printRegisters() {
