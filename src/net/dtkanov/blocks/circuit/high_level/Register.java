@@ -64,5 +64,9 @@ public class Register extends Node {
 			data[i].propagate();
 		super.propagate(true);
 	}
+	
+	public int getBitness() {
+		return bitness;
+	}
 
 }
