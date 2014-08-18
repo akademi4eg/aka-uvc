@@ -68,7 +68,9 @@ public class ControlUnit extends Node {
 	/** Fake zero */
 	private ConstantNode zero;
 	/** Checks if it is rotations instruction. */
-	ANDNode comb_rot_ctrl[];
+	private ANDNode comb_rot_ctrl[];
+	/** Controller for PC register. */
+	private PCRegController pc_ctrl;
 	
 	public ControlUnit() {
 		super(null);
@@ -158,36 +160,47 @@ public class ControlUnit extends Node {
 		///////////////////////////////////////////////////////////////////////
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
+		// TODO replace lookup with clever logic
+		// table format: xxPPAAAA, PP - PC controller mode, AAAA - ALU mode
 		byte[] alu_lookup = new byte[1<<BITNESS];
 		for (int i = 0; i < 1<<6; i++) {
-			alu_lookup[(1<<6) + i] = 0b0111;// MOV => OP1
-			alu_lookup[i] = 0b0111;// MVI => OP1
+			alu_lookup[(1<<6) + i] = 0b010111;// MOV => OP1, inc1
+			alu_lookup[i] = 0b100111;// MVI => OP1, inc2
 		}
 		for (int i = 0; i < 1<<3; i++) {
-			alu_lookup[0b10000000 + i] = 0b0001;// ADD => ADD
-			alu_lookup[0b10001000 + i] = 0b0001;// ADC => ADD
+			alu_lookup[0b10000000 + i] = 0b010001;// ADD => ADD
+			alu_lookup[0b10001000 + i] = 0b010001;// ADC => ADD
 			
-			alu_lookup[0b10010000 + i] = 0b1001;// SUB => SUB
-			alu_lookup[0b10011000 + i] = 0b1001;// SBB => SUB
+			alu_lookup[0b10010000 + i] = 0b011001;// SUB => SUB
+			alu_lookup[0b10011000 + i] = 0b011001;// SBB => SUB
 			
-			alu_lookup[0b00000100 + (i<<3)] = 0b0101;// INR => INC
-			alu_lookup[0b00000101 + (i<<3)] = 0b1101;// DER => DEC
+			alu_lookup[0b00000100 + (i<<3)] = 0b010101;// INR => INC
+			alu_lookup[0b00000101 + (i<<3)] = 0b011101;// DER => DEC
 			
-			alu_lookup[0b10100000 + i] = 0b0000;// ANA => AND
-			alu_lookup[0b10110000 + i] = 0b1000;// ORA => OR
-			alu_lookup[0b10101000 + i] = 0b0100;// XRA => XOR
+			alu_lookup[0b10100000 + i] = 0b010000;// ANA => AND
+			alu_lookup[0b10110000 + i] = 0b011000;// ORA => OR
+			alu_lookup[0b10101000 + i] = 0b010100;// XRA => XOR
 		}
-		alu_lookup[0b11000110] = 0b0001;// ADI => ADD
-		alu_lookup[0b11001110] = 0b0001;// ACI => ADD
-		alu_lookup[0b11010110] = 0b1001;// SUI => SUB
-		alu_lookup[0b11011110] = 0b1001;// SBI => SUB
-		alu_lookup[0b11100110] = 0b0000;// ANI => AND
-		alu_lookup[0b11110110] = 0b1000;// ORI => OR
-		alu_lookup[0b11101110] = 0b0100;// XRI => XOR
-		alu_lookup[0b00000111] = 0b0110;// RLC => ROL
-		alu_lookup[0b00001111] = 0b1110;// RRC => ROR
+		alu_lookup[0b11000110] = 0b100001;// ADI => ADD
+		alu_lookup[0b11001110] = 0b100001;// ACI => ADD
+		alu_lookup[0b11010110] = 0b101001;// SUI => SUB
+		alu_lookup[0b11011110] = 0b101001;// SBI => SUB
+		alu_lookup[0b11100110] = 0b100000;// ANI => AND
+		alu_lookup[0b11110110] = 0b101000;// ORI => OR
+		alu_lookup[0b11101110] = 0b100100;// XRI => XOR
+		alu_lookup[0b00000111] = 0b010110;// RLC => ROL
+		alu_lookup[0b00001111] = 0b011110;// RRC => ROR
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		mem_alu_in = new LookUp(BITNESS*2, storage);// 16-bit addressing
+		///////////////////////////////////////////////////////////////////////
+		pc_ctrl = new PCRegController(PC);
+		for (int i = 0; i < BITNESS; i++) {
+			pc_ctrl.connectSrc(inNOPs_A[i], 0, i);
+			pc_ctrl.connectSrc(inNOPs_B[i], 0, i + BITNESS);
+		}
+		pc_ctrl.connectSrc(alu_ctrl, 4, BITNESS*2);
+		pc_ctrl.connectSrc(alu_ctrl, 5, BITNESS*2 + 1);
+		pc_ctrl.connectSrc(clock, 0, BITNESS*2 + 2);
 		///////////////////////////////////////////////////////////////////////
 		initOutputToRegisters();
 		initInputFromRegisters();
@@ -367,6 +380,8 @@ public class ControlUnit extends Node {
 			H.connectSrc(zero, 0, i);
 			L.connectSrc(zero, 0, i);
 			F.connectSrc(zero, 0, i);
+			PC.connectSrc(zero, 0, i);
+			PC.connectSrc(zero, 0, i + BITNESS);
 		}
 		// TODO prevent flags change for mov, inc, dec etc.
 		F.connectSrc(alu, BITNESS+ALU.C_FLAG_SHIFT, C_FLAG);
@@ -388,6 +403,7 @@ public class ControlUnit extends Node {
 		H.connectSrc(zero, 0, BITNESS);
 		L.connectSrc(zero, 0, BITNESS);
 		F.connectSrc(zero, 0, BITNESS);
+		PC.connectSrc(zero, 0, 2*BITNESS);
 	}
 	
 	/** Input: Opcode byte followed by two data bytes. */

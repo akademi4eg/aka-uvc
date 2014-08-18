@@ -43,38 +43,40 @@ public class ControlUnitTest {
 
 	@Test
 	public void MVITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		// MVI B, 01001011b
 		moveToReg(REG_B, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		// MVI H, 11111111b
 		moveToReg(REG_H, 0b11111111);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void MOVTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
-
+		int cur_pc = getPCValue();
 		// MVI C, 10101010b
 		moveToReg(REG_C, 0b10101010);
-
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		// MVI E, C
 		setOperationAndPropagete(0b01011001);
 		setValuesAndPropagete(0b11111111, 0);
 		checkReg(REG_E, 0b10101010);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ADITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 11001011b
 		moveToReg(REG_A, 0b11001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ADI 00100111b
 		setOperationAndPropagete(0b11000110);
@@ -86,19 +88,23 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ADDTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 11001011b
 		moveToReg(0b111, 0b11001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// MVI D, 00101010b
 		moveToReg(0b010, 0b00101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ADD D
 		setOperationAndPropagete(0b10000010);
@@ -110,16 +116,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void SUITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// SUI 00100111b
 		setOperationAndPropagete(0b11010110);	
@@ -131,19 +139,23 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void SUBTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// MVI D, 00101010b
 		moveToReg(0b010, 0b00101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// SUB D
 		setOperationAndPropagete(0b10010010);
@@ -155,16 +167,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ANITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ANI 00100111b
 		setOperationAndPropagete(0b11100110);
@@ -176,19 +190,23 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ANATest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// MVI C, 00101010b
 		moveToReg(0b001, 0b00101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ANA C
 		setOperationAndPropagete(0b10100001);
@@ -200,16 +218,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ORITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ORI 00100111b
 		setOperationAndPropagete(0b11110110);
@@ -221,19 +241,23 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void ORATest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// MVI L, 00101010b
 		moveToReg(0b101, 0b00101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// ORA L
 		setOperationAndPropagete(0b10110101);
@@ -245,16 +269,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void XRITest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// XRI 00100111b
 		setOperationAndPropagete(0b11101110);
@@ -266,19 +292,23 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void XRATest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 01001011b
 		moveToReg(0b111, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// MVI L, 00101010b
 		moveToReg(0b101, 0b00101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// XRA L
 		setOperationAndPropagete(0b10101101);
@@ -290,16 +320,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void INRTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI L, 00101001b
 		moveToReg(0b101, 0b00101001);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// INR L
 		setOperationAndPropagete(0b00101100);
@@ -310,16 +342,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void DCRTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI L, 00101001b
 		moveToReg(0b101, 0b00101001);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// DCR L
 		setOperationAndPropagete(0b00101101);
@@ -330,16 +364,18 @@ public class ControlUnitTest {
 		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
 		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void RLCTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 10101000b
 		moveToReg(0b111, 0b10101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// RLC
 		setOperationAndPropagete(0b00000111);
@@ -348,16 +384,18 @@ public class ControlUnitTest {
 		// 01010001b
 		checkReg(REG_A, 0b01010001);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	@Test
 	public void RRCTest() {
-		for (int i = 0; i < 2*ControlUnit.BITNESS; i++) {
-			assertTrue(cu.getRegPCValue(i)==false);
-		}
+		int cur_pc = getPCValue();
 		
 		// MVI A, 10101000b
 		moveToReg(0b111, 0b10101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
 		
 		// RRC
 		setOperationAndPropagete(0b00001111);
@@ -366,6 +404,8 @@ public class ControlUnitTest {
 		// 01010100b
 		checkReg(REG_A, 0b01010100);
 		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
 	}
 	
 	protected void moveToReg(int reg_code, int val) {
@@ -422,10 +462,19 @@ public class ControlUnitTest {
 					assertTrue(cu.getRegLValue(i)==((val & 1<<i) == 1<<i));
 					break;
 				default:
-					assertTrue(false);
+					assertTrue(cu.getRegPCValue(i)==((val & 1<<i) == 1<<i));
 					break;
 			}
 		}
+	}
+	
+	protected int getPCValue() {
+		int res = 0;
+		for (int i = 0; i < ControlUnit.BITNESS; i++) {
+			int temp = cu.getRegPCValue(i)?1:0;
+			res += temp<<i;
+		}
+		return res;
 	}
 	
 	protected void printRegisters() {
@@ -460,6 +509,10 @@ public class ControlUnitTest {
 		System.out.print("[F:");
 		for (int i = 7; i >= 0; i--)
 			System.out.print(cu.getFlag(i)?"1":"0");
+		System.out.print("]");
+		System.out.print("[PC:");
+		for (int i = 7; i >= 0; i--)
+			System.out.print(cu.getRegPCValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.println();
 	}

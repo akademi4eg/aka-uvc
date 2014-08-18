@@ -5,4 +5,8 @@ public class NOPNode extends NOTNode {
 	public boolean out(int index) {
 		return data;
 	}
+	@Override
+	public String toString() {
+		return "["+(isReady()?"+":"-")+getId()+":"+getClass().getSimpleName()+"|"+data+"]";
+	}
 }
