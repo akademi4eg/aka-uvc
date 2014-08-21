@@ -40,6 +40,52 @@ public class ControlUnitTest {
 		clock = new ConstantNode(true);
 		clock.connectDst(0, cu, 3*ControlUnit.BITNESS);
 	}
+	
+	@Test
+	public void NOPTest() {
+		int cur_pc = getPCValue();
+		// NOP
+		setOperationAndPropagete(0);
+		setValuesAndPropagete(56, 123);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		// MVI B, 01001011b
+		moveToReg(REG_B, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// NOP
+		setOperationAndPropagete(0);
+		setValuesAndPropagete(0, 123);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_B, 0b01001011);
+		// NOP
+		setOperationAndPropagete(0);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_B, 0b01001011);
+	}
+	
+	@Test
+	public void JMPTest() {
+		int cur_pc = getPCValue();
+		// NOP
+		setOperationAndPropagete(0);
+		setValuesAndPropagete(56, 123);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		// MVI B, 01001011b
+		moveToReg(REG_D, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// JMP 0100101101010101b
+		setOperationAndPropagete(0b11000011);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		checkReg(REG_D, 0b01001011);
+	}
 
 	@Test
 	public void MVITest() {
@@ -463,6 +509,7 @@ public class ControlUnitTest {
 					break;
 				default:
 					assertTrue(cu.getRegPCValue(i)==((val & 1<<i) == 1<<i));
+					assertTrue(cu.getRegPCValue(i+8)==((val & 1<<(i+8)) == 1<<(i+8)));
 					break;
 			}
 		}
@@ -511,7 +558,7 @@ public class ControlUnitTest {
 			System.out.print(cu.getFlag(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[PC:");
-		for (int i = 7; i >= 0; i--)
+		for (int i = 15; i >= 0; i--)
 			System.out.print(cu.getRegPCValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.println();

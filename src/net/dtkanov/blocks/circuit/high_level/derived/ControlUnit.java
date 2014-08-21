@@ -71,6 +71,8 @@ public class ControlUnit extends Node {
 	private ANDNode comb_rot_ctrl[];
 	/** Controller for PC register. */
 	private PCRegController pc_ctrl;
+	/** ALU disabler. */
+	private NOPNode is_alu_on;
 	
 	public ControlUnit() {
 		super(null);
@@ -161,35 +163,36 @@ public class ControlUnit extends Node {
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
 		// TODO replace lookup with clever logic
-		// table format: xxPPAAAA, PP - PC controller mode, AAAA - ALU mode
+		// table format: xRPPAAAA, R - is ALU on?, PP - PC controller mode, AAAA - ALU mode
 		byte[] alu_lookup = new byte[1<<BITNESS];
 		for (int i = 0; i < 1<<6; i++) {
-			alu_lookup[(1<<6) + i] = 0b010111;// MOV => OP1, inc1
-			alu_lookup[i] = 0b100111;// MVI => OP1, inc2
+			alu_lookup[(1<<6) + i] = 0b1010111;// MOV => OP1
+			alu_lookup[i] = 0b1100111;// MVI => OP1
 		}
 		for (int i = 0; i < 1<<3; i++) {
-			alu_lookup[0b10000000 + i] = 0b010001;// ADD => ADD
-			alu_lookup[0b10001000 + i] = 0b010001;// ADC => ADD
+			alu_lookup[0b10000000 + i] = 0b1010001;// ADD => ADD
+			alu_lookup[0b10001000 + i] = 0b1010001;// ADC => ADD
 			
-			alu_lookup[0b10010000 + i] = 0b011001;// SUB => SUB
-			alu_lookup[0b10011000 + i] = 0b011001;// SBB => SUB
+			alu_lookup[0b10010000 + i] = 0b1011001;// SUB => SUB
+			alu_lookup[0b10011000 + i] = 0b1011001;// SBB => SUB
 			
-			alu_lookup[0b00000100 + (i<<3)] = 0b010101;// INR => INC
-			alu_lookup[0b00000101 + (i<<3)] = 0b011101;// DER => DEC
+			alu_lookup[0b00000100 + (i<<3)] = 0b1010101;// INR => INC
+			alu_lookup[0b00000101 + (i<<3)] = 0b1011101;// DER => DEC
 			
-			alu_lookup[0b10100000 + i] = 0b010000;// ANA => AND
-			alu_lookup[0b10110000 + i] = 0b011000;// ORA => OR
-			alu_lookup[0b10101000 + i] = 0b010100;// XRA => XOR
+			alu_lookup[0b10100000 + i] = 0b1010000;// ANA => AND
+			alu_lookup[0b10110000 + i] = 0b1011000;// ORA => OR
+			alu_lookup[0b10101000 + i] = 0b1010100;// XRA => XOR
 		}
-		alu_lookup[0b11000110] = 0b100001;// ADI => ADD
-		alu_lookup[0b11001110] = 0b100001;// ACI => ADD
-		alu_lookup[0b11010110] = 0b101001;// SUI => SUB
-		alu_lookup[0b11011110] = 0b101001;// SBI => SUB
-		alu_lookup[0b11100110] = 0b100000;// ANI => AND
-		alu_lookup[0b11110110] = 0b101000;// ORI => OR
-		alu_lookup[0b11101110] = 0b100100;// XRI => XOR
-		alu_lookup[0b00000111] = 0b010110;// RLC => ROL
-		alu_lookup[0b00001111] = 0b011110;// RRC => ROR
+		alu_lookup[0b00000000] = 0b0010111;// NOP
+		alu_lookup[0b11000110] = 0b1100001;// ADI => ADD
+		alu_lookup[0b11001110] = 0b1100001;// ACI => ADD
+		alu_lookup[0b11010110] = 0b1101001;// SUI => SUB
+		alu_lookup[0b11011110] = 0b1101001;// SBI => SUB
+		alu_lookup[0b11100110] = 0b1100000;// ANI => AND
+		alu_lookup[0b11110110] = 0b1101000;// ORI => OR
+		alu_lookup[0b11101110] = 0b1100100;// XRI => XOR
+		alu_lookup[0b00000111] = 0b1010110;// RLC => ROL
+		alu_lookup[0b00001111] = 0b1011110;// RRC => ROR
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		mem_alu_in = new LookUp(BITNESS*2, storage);// 16-bit addressing
 		///////////////////////////////////////////////////////////////////////
@@ -202,6 +205,10 @@ public class ControlUnit extends Node {
 		pc_ctrl.connectSrc(alu_ctrl, 5, BITNESS*2 + 1);
 		pc_ctrl.connectSrc(clock, 0, BITNESS*2 + 2);
 		///////////////////////////////////////////////////////////////////////
+		is_alu_on = new NOPNode();
+		is_alu_on.connectSrc(alu_ctrl, 6, 0);
+		///////////////////////////////////////////////////////////////////////
+		
 		initOutputToRegisters();
 		initInputFromRegisters();
 	}
@@ -327,10 +334,12 @@ public class ControlUnit extends Node {
 			dst_ctrl_rot[i].connectSrc(dst_ctrl[i], 0, 0)
 			   			   .connectSrc(comb_rot_ctrl[4], 0, 1);
 		}
-		final int REG_SEL_CNT = 3;
-		out_demux = new DeMux[(1<<REG_SEL_CNT) - 1];
+		ANDNode comb_alu = new ANDNode();
+		comb_alu.connectSrc(is_alu_on, 0, 0);
+		comb_alu.connectSrc(clock, 0, 1);
+		out_demux = new DeMux[(1<<3) - 1];
 		out_demux[0] = new DeMux();
-		out_demux[0].connectSrc(clock, 0, 0);
+		out_demux[0].connectSrc(comb_alu, 0, 0);
 		out_demux[0].connectSrc(dst_ctrl_rot[0], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
@@ -360,7 +369,7 @@ public class ControlUnit extends Node {
 		// 111
 		A.connectSrc(out_demux[out_demux.length-4], 0, BITNESS);
 		// flags
-		F.connectSrc(clock, 0, BITNESS);
+		F.connectSrc(comb_alu, 0, BITNESS);
 		
 		// connect ALU output
 		for (int i = 0; i < BITNESS; i++) {

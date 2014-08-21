@@ -14,7 +14,7 @@ Implemented elements:
 * arithmetics (adder, two's complement etc.)
 * simple ALU
 * memory
-* control unit under construction...
+* control unit and cpu under construction...
 
 ALU control codes:
 
