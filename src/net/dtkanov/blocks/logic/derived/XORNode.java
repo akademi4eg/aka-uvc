@@ -77,4 +77,9 @@ public class XORNode extends Node {
 		inNOT[1].reset();
 		inNOP[1].reset();
 	}
+	
+	@Override
+	public String toString() {
+		return "["+(isReady()?"+":"-")+getId()+":"+getClass().getSimpleName()+"|"+out(0)+"]";
+	}
 }

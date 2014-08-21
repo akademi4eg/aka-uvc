@@ -70,21 +70,243 @@ public class ControlUnitTest {
 	@Test
 	public void JMPTest() {
 		int cur_pc = getPCValue();
-		// NOP
-		setOperationAndPropagete(0);
-		setValuesAndPropagete(56, 123);
-		cur_pc += 1;
-		checkReg(-1, cur_pc);
-		// MVI B, 01001011b
-		moveToReg(REG_D, 0b01001011);
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
 		cur_pc += 2;
 		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
 		// JMP 0100101101010101b
 		setOperationAndPropagete(0b11000011);
 		setValuesAndPropagete(0b01010101, 0b01001011);
 		cur_pc = 0b0100101101010101;
 		checkReg(-1, cur_pc);
-		checkReg(REG_D, 0b01001011);
+	}
+	
+	@Test
+	public void JNZTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		// JNZ 0100101101010101b
+		setOperationAndPropagete(0b11000010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// INR L
+		setOperationAndPropagete(0b00101100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		cur_pc += 1;
+		// DCR L
+		setOperationAndPropagete(0b00101101);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==true);
+		cur_pc += 1;
+		// JNZ 0100101101010101b
+		setOperationAndPropagete(0b11000010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JZTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		// JZ 0100101101010101b
+		setOperationAndPropagete(0b11001010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+		// INR L
+		setOperationAndPropagete(0b00101100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		// DCR L
+		setOperationAndPropagete(0b00101101);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==true);
+		// JZ 0100101101010101b
+		setOperationAndPropagete(0b11001010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JNCTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		// JNC 0100101101010101b
+		setOperationAndPropagete(0b11010010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// MOV A, 10001011b
+		moveToReg(REG_A, 0b10001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// ADI 10100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b10100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		// JNC 0100101101010101b
+		setOperationAndPropagete(0b11010010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JCTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		// JC 0100101101010101b
+		setOperationAndPropagete(0b11011010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+		// MOV A, 10001011b
+		moveToReg(REG_A, 0b10001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// ADI 10100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b10100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		// JC 0100101101010101b
+		setOperationAndPropagete(0b11011010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JNPTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100110b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100110, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		// JNP 0100101101010101b
+		setOperationAndPropagete(0b11100010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// INR A
+		setOperationAndPropagete(0b00111100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		cur_pc += 1;
+		// JNP 0100101101010101b
+		setOperationAndPropagete(0b11100010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JPTest() {
+		int cur_pc = getPCValue();
+		// ADI 00101110b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00101110, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		// JP 0100101101010101b
+		setOperationAndPropagete(0b11101010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// INR A
+		setOperationAndPropagete(0b00111100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+		cur_pc += 1;
+		// JP 0100101101010101b
+		setOperationAndPropagete(0b11101010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JNSTest() {
+		int cur_pc = getPCValue();
+		// ADI 01111111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b01111111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		// JNS 0100101101010101b
+		setOperationAndPropagete(0b11110010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// INR A
+		setOperationAndPropagete(0b00111100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		cur_pc += 1;
+		// JNS 0100101101010101b
+		setOperationAndPropagete(0b11110010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
+	public void JSTest() {
+		int cur_pc = getPCValue();
+		// ADI 11111111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b11111111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		// JS 0100101101010101b
+		setOperationAndPropagete(0b11111010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101010101;
+		checkReg(-1, cur_pc);
+		// INR A
+		setOperationAndPropagete(0b00111100);
+		setValuesAndPropagete(0, 0);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		cur_pc += 1;
+		// JS 0100101101010101b
+		setOperationAndPropagete(0b11111010);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
 	}
 
 	@Test

@@ -59,4 +59,9 @@ public class ORNode extends Node {
 		inNOT[0].reset();
 		inNOT[1].reset();
 	}
+	
+	@Override
+	public String toString() {
+		return "["+(isReady()?"+":"-")+getId()+":"+getClass().getSimpleName()+"|"+out(0)+"]";
+	}
 }

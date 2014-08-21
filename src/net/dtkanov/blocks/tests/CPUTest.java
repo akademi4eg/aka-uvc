@@ -21,44 +21,41 @@ public class CPUTest {
 	}
 
 	/**
-	 * Gets 6th Fibonacci number (8).
+	 * Gets 8th Fibonacci number (21).
 	 */
 	@Test
 	public void fibonacciTest() {
+		// MVI D, 5
+		cpu.writeToMemory(0, 0b00010110);
+		cpu.writeToMemory(1, 0b00000101);
 		// MVI A, 1 [2]
-		cpu.writeToMemory(0, 0b00111110);
-		cpu.writeToMemory(1, 0b00000001);
+		cpu.writeToMemory(2, 0b00111110);
+		cpu.writeToMemory(3, 0b00000001);
 		// INR B [1]
-		cpu.writeToMemory(2, 0b00000100);
+		cpu.writeToMemory(4, 0b00000100);
 		// MOV C, A
-		cpu.writeToMemory(3, 0b01001111);
+		cpu.writeToMemory(5, 0b01001111);
 		// ADD B [3]
-		cpu.writeToMemory(4, 0b10000000);
-		// MOV B, C
-		cpu.writeToMemory(5, 0b01000001);
+		cpu.writeToMemory(6, 0b10000000);
+		// MOV B, C <--loop start
+		cpu.writeToMemory(7, 0b01000001);
 		// MOV C, A
-		cpu.writeToMemory(6, 0b01001111);
-		// ADD B [4]
-		cpu.writeToMemory(7, 0b10000000);
-		// MOV B, C
-		cpu.writeToMemory(8, 0b01000001);
-		// MOV C, A
-		cpu.writeToMemory(9, 0b01001111);
-		// ADD B [5]
-		cpu.writeToMemory(10, 0b10000000);
-		// MOV B, C
-		cpu.writeToMemory(11, 0b01000001);
-		// MOV C, A
-		cpu.writeToMemory(12, 0b01001111);
-		// ADD B [6]
-		cpu.writeToMemory(13, 0b10000000);
+		cpu.writeToMemory(8, 0b01001111);
+		// ADD B [3+i]
+		cpu.writeToMemory(9, 0b10000000);
+		// DCR D
+		cpu.writeToMemory(10, 0b00010101);
+		// JNZ 5 <--loop end
+		cpu.writeToMemory(11, 0b11000010);
+		cpu.writeToMemory(12, 7);
+		cpu.writeToMemory(13, 0);
 		cpu.init();
 		
 		while (getPCValue() < 14) {
 			clock.setValue(true).propagate();
 		}
 		checkReg(-1, 14);
-		checkReg(ControlUnitTest.REG_A, 8);
+		checkReg(ControlUnitTest.REG_A, 21);
 	}
 	
 	protected int getPCValue() {
@@ -135,7 +132,7 @@ public class CPUTest {
 			System.out.print(cpu.getControlUnit().getFlag(i)?"1":"0");
 		System.out.print("]");
 		System.out.print("[PC:");
-		for (int i = 7; i >= 0; i--)
+		for (int i = 15; i >= 0; i--)
 			System.out.print(cpu.getControlUnit().getRegPCValue(i)?"1":"0");
 		System.out.print("]");
 		System.out.println();

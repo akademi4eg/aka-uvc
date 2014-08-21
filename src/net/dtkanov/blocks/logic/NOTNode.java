@@ -32,5 +32,10 @@ public class NOTNode extends Node {
 	public boolean isReady() {
 		return state;
 	}
+	
+	@Override
+	public String toString() {
+		return "["+(isReady()?"+":"-")+getId()+":"+getClass().getSimpleName()+"|"+out(0)+"]";
+	}
 
 }

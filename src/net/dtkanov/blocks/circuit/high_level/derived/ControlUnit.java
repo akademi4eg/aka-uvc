@@ -3,6 +3,7 @@ package net.dtkanov.blocks.circuit.high_level.derived;
 import net.dtkanov.blocks.circuit.DeMux;
 import net.dtkanov.blocks.circuit.LookUp;
 import net.dtkanov.blocks.circuit.MultiNOT;
+import net.dtkanov.blocks.circuit.Mux;
 import net.dtkanov.blocks.circuit.high_level.MultiMux;
 import net.dtkanov.blocks.circuit.high_level.Register;
 import net.dtkanov.blocks.logic.ANDNode;
@@ -11,6 +12,7 @@ import net.dtkanov.blocks.logic.NOPNode;
 import net.dtkanov.blocks.logic.NOTNode;
 import net.dtkanov.blocks.logic.Node;
 import net.dtkanov.blocks.logic.derived.ORNode;
+import net.dtkanov.blocks.logic.derived.XORNode;
 /** Implements control unit. */
 public class ControlUnit extends Node {
 	/** Bitness of CPU. */
@@ -73,6 +75,10 @@ public class ControlUnit extends Node {
 	private PCRegController pc_ctrl;
 	/** ALU disabler. */
 	private NOPNode is_alu_on;
+	/** True if jump condition is not satisfied. */
+	private XORNode not_jump_cond;
+	/** True if jump is not requested. */
+	private ORNode is_not_jump;
 	
 	public ControlUnit() {
 		super(null);
@@ -160,6 +166,8 @@ public class ControlUnit extends Node {
 		SP = new Register(2*BITNESS);
 		PC = new Register(2*BITNESS);
 		///////////////////////////////////////////////////////////////////////
+		initJumps();
+		///////////////////////////////////////////////////////////////////////
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
 		// TODO replace lookup with clever logic
@@ -182,8 +190,11 @@ public class ControlUnit extends Node {
 			alu_lookup[0b10100000 + i] = 0b1010000;// ANA => AND
 			alu_lookup[0b10110000 + i] = 0b1011000;// ORA => OR
 			alu_lookup[0b10101000 + i] = 0b1010100;// XRA => XOR
+			
+			alu_lookup[0b11000010 + (i<<3)] = 0b0000111;// Jccc
 		}
 		alu_lookup[0b00000000] = 0b0010111;// NOP
+		alu_lookup[0b11000011] = 0b0000111;// JMP
 		alu_lookup[0b11000110] = 0b1100001;// ADI => ADD
 		alu_lookup[0b11001110] = 0b1100001;// ACI => ADD
 		alu_lookup[0b11010110] = 0b1101001;// SUI => SUB
@@ -201,8 +212,25 @@ public class ControlUnit extends Node {
 			pc_ctrl.connectSrc(inNOPs_A[i], 0, i);
 			pc_ctrl.connectSrc(inNOPs_B[i], 0, i + BITNESS);
 		}
-		pc_ctrl.connectSrc(alu_ctrl, 4, BITNESS*2);
-		pc_ctrl.connectSrc(alu_ctrl, 5, BITNESS*2 + 1);
+		// lowest bit of opcode = 0 => conditional jump
+		is_not_jump = new ORNode();
+		is_not_jump.connectSrc(alu_ctrl, 4, 0);
+		is_not_jump.connectSrc(alu_ctrl, 5, 1);
+		NOTNode neg_is_cond = new NOTNode();
+		neg_is_cond.connectSrc(opNOPs[0], 0, 0);// true when conditional jump
+		ANDNode skip_jump = new ANDNode();
+		skip_jump.connectSrc(neg_is_cond, 0, 0);
+		skip_jump.connectSrc(not_jump_cond, 0, 1);
+		Mux jumper = new Mux();
+		jumper.connectSrc(is_not_jump, 0, 2);
+		jumper.connectSrc(alu_ctrl, 4, 0);
+		jumper.connectSrc(skip_jump, 0, 1);
+		pc_ctrl.connectSrc(jumper, 0, BITNESS*2);
+		jumper = new Mux();
+		jumper.connectSrc(is_not_jump, 0, 2);
+		jumper.connectSrc(alu_ctrl, 5, 0);
+		jumper.connectSrc(skip_jump, 0, 1);
+		pc_ctrl.connectSrc(jumper, 0, BITNESS*2 + 1);
 		pc_ctrl.connectSrc(clock, 0, BITNESS*2 + 2);
 		///////////////////////////////////////////////////////////////////////
 		is_alu_on = new NOPNode();
@@ -211,6 +239,25 @@ public class ControlUnit extends Node {
 		
 		initOutputToRegisters();
 		initInputFromRegisters();
+	}
+	
+	private void initJumps() {
+		Mux flag_sel[] = new Mux[3];
+		flag_sel[0] = new Mux();
+		flag_sel[0].connectSrc(F, S_FLAG, 0);
+		flag_sel[0].connectSrc(F, C_FLAG, 1);
+		flag_sel[0].connectSrc(opNOPs[5], 0, 2);
+		flag_sel[1] = new Mux();
+		flag_sel[1].connectSrc(F, P_FLAG, 0);
+		flag_sel[1].connectSrc(F, Z_FLAG, 1);
+		flag_sel[1].connectSrc(opNOPs[5], 0, 2);
+		flag_sel[2] = new Mux();
+		flag_sel[2].connectSrc(flag_sel[0], 0, 0);
+		flag_sel[2].connectSrc(flag_sel[1], 0, 1);
+		flag_sel[2].connectSrc(opNOPs[4], 0, 2);
+		not_jump_cond = new XORNode();
+		not_jump_cond.connectSrc(flag_sel[2], 0, 0);
+		not_jump_cond.connectSrc(opNOPs[3], 0, 1);
 	}
 	
 	private void initInputFromRegisters() {
