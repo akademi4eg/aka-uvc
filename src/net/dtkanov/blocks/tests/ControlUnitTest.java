@@ -676,6 +676,36 @@ public class ControlUnitTest {
 		checkReg(-1, cur_pc);
 	}
 	
+	@Test
+	public void STATest() {
+		int cur_pc = getPCValue();
+		// MVI A, 10101000b
+		moveToReg(0b111, 0b10101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==0);
+		// STA 3242
+		setOperationAndPropagete(0b00110010);
+		setValuesAndPropagete(0b10101010, 0b00001100);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b10101000);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==(byte)0b10101000);
+	}
+	
+	@Test
+	public void LDATest() {
+		int cur_pc = getPCValue();
+		cu.loadToStorage(3242, (byte)33);
+		// LDA 3242
+		setOperationAndPropagete(0b00111010);
+		setValuesAndPropagete(0b10101010, 0b00001100);
+		cur_pc += 3;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 33);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==33);
+	}
+	
 	protected void moveToReg(int reg_code, int val) {
 		// MVI REG, VAL
 		in_op[0].setValue(false).propagate();
