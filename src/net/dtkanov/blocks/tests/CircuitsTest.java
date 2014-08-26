@@ -56,6 +56,37 @@ public class CircuitsTest {
 	}
 	
 	@Test
+	public void AllTest() {
+		Node all = new AllNode(4);
+		ConstantNode in1 = new ConstantNode(true);
+		ConstantNode in2 = new ConstantNode(false);
+		ConstantNode in3 = new ConstantNode(true);
+		ConstantNode in4 = new ConstantNode(false);
+		all.connectSrc(in1, 0, 0);
+		all.connectSrc(in2, 0, 1);
+		all.connectSrc(in3, 0, 2);
+		all.connectSrc(in4, 0, 3);
+		
+		in1.propagate();
+		in2.propagate();
+		in3.propagate();
+		in4.propagate();
+		assertTrue(all.out(0)==false);
+		
+		in1.setValue(false).propagate();
+		in2.setValue(false).propagate();
+		in3.setValue(false).propagate();
+		in4.setValue(false).propagate();
+		assertTrue(all.out(0)==false);
+		
+		in1.setValue(true).propagate();
+		in2.setValue(true).propagate();
+		in3.setValue(true).propagate();
+		in4.setValue(true).propagate();
+		assertTrue(all.out(0)==true);
+	}
+	
+	@Test
 	public void GatedDLatchTest() {
 		ConstantNode in = new ConstantNode(true);
 		ConstantNode timer = new ConstantNode(true);

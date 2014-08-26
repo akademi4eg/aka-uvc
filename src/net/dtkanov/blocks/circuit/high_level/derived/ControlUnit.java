@@ -205,6 +205,9 @@ public class ControlUnit extends Node {
 			alu_lookup[0b10110000 + i] = 0b1011000;// ORA => OR
 			alu_lookup[0b10101000 + i] = 0b1010100;// XRA => XOR
 			
+			alu_lookup[0b10111000 + i] = 0b1011001;// CMP => SUB
+			alu_lookup[0b11111000 + i] = 0b1101001;// CPI => SUB
+			
 			alu_lookup[0b11000010 + (i<<3)] = 0b0000111;// Jccc
 		}
 		alu_lookup[0b00111010] = 0b1110111;// LDA => OP1
@@ -407,7 +410,7 @@ public class ControlUnit extends Node {
 			dst_ctrl[i].connectSrc(opNOPs[BITNESS-1], 0, 0)
 					   .connectSrc(opNOPs[3+i], 0, 1);
 		}
-		// Also 000XX111 pattern (rotations) should set A as destanation.
+		// Also 000XX111 pattern (rotations) should set A as destination.
 		ORNode dst_ctrl_rot[] = new ORNode[3];
 		MultiNOT rev_high_3bit = new MultiNOT(3);
 		comb_rot_ctrl = new ANDNode[5];
@@ -452,7 +455,7 @@ public class ControlUnit extends Node {
 		// 010
 		D.connectSrc(out_demux[out_demux.length-2], 1, BITNESS);
 		// 110
-		// TODO add memory here
+		// TODO add H:L / inNOPs switch
 		mem.connectSrc(out_demux[out_demux.length-2], 0, 3*BITNESS);
 		// 001
 		C.connectSrc(out_demux[out_demux.length-3], 1, BITNESS);
