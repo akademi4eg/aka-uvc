@@ -1,5 +1,6 @@
 package net.dtkanov.blocks.circuit.high_level.derived;
 
+import net.dtkanov.blocks.circuit.AllNode;
 import net.dtkanov.blocks.circuit.DeMux;
 import net.dtkanov.blocks.circuit.LookUp;
 import net.dtkanov.blocks.circuit.Memory;
@@ -185,7 +186,7 @@ public class ControlUnit extends Node {
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
 		// TODO replace lookup with clever logic
-		// table format: xRPPAAAA, R - is ALU on?, PP - PC controller mode, AAAA - ALU mode
+		// table format: xRPPAAAA, R - is ALU output to registers on?, PP - PC controller mode, AAAA - ALU mode
 		byte[] alu_lookup = new byte[1<<BITNESS];
 		for (int i = 0; i < 1<<6; i++) {
 			alu_lookup[(1<<6) + i] = 0b1010111;// MOV => OP1
@@ -205,8 +206,7 @@ public class ControlUnit extends Node {
 			alu_lookup[0b10110000 + i] = 0b1011000;// ORA => OR
 			alu_lookup[0b10101000 + i] = 0b1010100;// XRA => XOR
 			
-			alu_lookup[0b10111000 + i] = 0b1011001;// CMP => SUB
-			alu_lookup[0b11111000 + i] = 0b1101001;// CPI => SUB
+			alu_lookup[0b10111000 + i] = 0b0011001;// CMP => SUB
 			
 			alu_lookup[0b11000010 + (i<<3)] = 0b0000111;// Jccc
 		}
@@ -223,6 +223,7 @@ public class ControlUnit extends Node {
 		alu_lookup[0b11101110] = 0b1100100;// XRI => XOR
 		alu_lookup[0b00000111] = 0b1010110;// RLC => ROL
 		alu_lookup[0b00001111] = 0b1011110;// RRC => ROR
+		alu_lookup[0b11111110] = 0b0101001;// CPI => SUB
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		///////////////////////////////////////////////////////////////////////
 		NORNode bits7_and_0 = new NORNode();
@@ -466,7 +467,16 @@ public class ControlUnit extends Node {
 		// 111
 		A.connectSrc(out_demux[out_demux.length-4], 0, BITNESS);
 		// flags
-		F.connectSrc(comb_alu, 0, BITNESS);
+		// enable flags for comparisons [1x111SSS]
+		Node is_cmp = new AllNode(4);
+		is_cmp.connectSrc(opNOPs[7], 0, 0);
+		is_cmp.connectSrc(opNOPs[5], 0, 1);
+		is_cmp.connectSrc(opNOPs[4], 0, 2);
+		is_cmp.connectSrc(opNOPs[3], 0, 3);
+		ORNode set_flags = new ORNode();
+		set_flags.connectSrc(is_cmp, 0, 0);
+		set_flags.connectSrc(comb_alu, 0, 1);
+		F.connectSrc(set_flags, 0, BITNESS);
 		
 		// connect ALU output
 		for (int i = 0; i < BITNESS; i++) {

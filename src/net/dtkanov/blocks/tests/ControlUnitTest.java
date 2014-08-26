@@ -675,6 +675,95 @@ public class ControlUnitTest {
 		cur_pc += 1;
 		checkReg(-1, cur_pc);
 	}
+
+	@Test
+	public void CMPTest() {
+		int cur_pc = getPCValue();
+		// MVI A, 00101000b
+		moveToReg(REG_A, 0b00101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// MVI B, 00101001b
+		moveToReg(REG_B, 0b00101001);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// CMP B
+		setOperationAndPropagete(0b10111000);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		// DCR B
+		setOperationAndPropagete(0b00000101);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		// CMP B
+		setOperationAndPropagete(0b10111000);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==true);
+		// DCR B
+		setOperationAndPropagete(0b00000101);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		// CMP B
+		setOperationAndPropagete(0b10111000);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.P_FLAG)==false);
+	}
+	
+	@Test
+	public void CPITest() {
+		int cur_pc = getPCValue();
+		// MVI A, 00101000b
+		moveToReg(REG_A, 0b00101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// CPI 00101111b
+		setOperationAndPropagete(0b11111110);
+		setValuesAndPropagete(0b00101111, 0);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// CPI 00101000b
+		setOperationAndPropagete(0b11111110);
+		setValuesAndPropagete(0b00101000, 0);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// CPI 00101010b
+		setOperationAndPropagete(0b11111110);
+		setValuesAndPropagete(0b00101010, 0);
+		checkReg(REG_A, 0b00101000);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.S_FLAG)==true);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+	}
 	
 	@Test
 	public void STATest() {
