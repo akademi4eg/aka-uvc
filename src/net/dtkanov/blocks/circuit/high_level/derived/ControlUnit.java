@@ -224,6 +224,7 @@ public class ControlUnit extends Node {
 		alu_lookup[0b00000111] = 0b1010110;// RLC => ROL
 		alu_lookup[0b00001111] = 0b1011110;// RRC => ROR
 		alu_lookup[0b11111110] = 0b0101001;// CPI => SUB
+		alu_lookup[0b00101111] = 0b1011100;// CPA => NOT
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		///////////////////////////////////////////////////////////////////////
 		NORNode bits7_and_0 = new NORNode();
@@ -432,20 +433,42 @@ public class ControlUnit extends Node {
 			dst_ctrl_rot[i].connectSrc(dst_ctrl[i], 0, 0)
 			   			   .connectSrc(comb_rot_ctrl[4], 0, 1);
 		}
+		// Special case: CMA command 00101111, DST = A.
+		MultiNOT revs = new MultiNOT(3);
+		revs.connectSrc(opNOPs[7], 0, 0);
+		revs.connectSrc(opNOPs[6], 0, 1);
+		revs.connectSrc(opNOPs[4], 0, 2);
+		AllNode is_cma = new AllNode(BITNESS);
+		is_cma.connectSrc(opNOPs[0], 0, 0);
+		is_cma.connectSrc(opNOPs[1], 0, 1);
+		is_cma.connectSrc(opNOPs[2], 0, 2);
+		is_cma.connectSrc(opNOPs[3], 0, 3);
+		is_cma.connectSrc(revs, 0, 4);
+		is_cma.connectSrc(opNOPs[5], 0, 5);
+		is_cma.connectSrc(revs, 1, 6);
+		is_cma.connectSrc(revs, 2, 7);
+		MultiOR cma_ctrl = new MultiOR(3);
+		cma_ctrl.connectSrc(dst_ctrl_rot[0], 0, 0);
+		cma_ctrl.connectSrc(dst_ctrl_rot[1], 0, 1);
+		cma_ctrl.connectSrc(dst_ctrl_rot[2], 0, 2);
+		cma_ctrl.connectSrc(is_cma, 0, 3);
+		cma_ctrl.connectSrc(is_cma, 0, 4);
+		cma_ctrl.connectSrc(is_cma, 0, 5);
+		
 		ANDNode comb_alu = new ANDNode();
 		comb_alu.connectSrc(is_alu_on, 0, 0);
 		comb_alu.connectSrc(clock, 0, 1);
 		out_demux = new DeMux[(1<<3) - 1];
 		out_demux[0] = new DeMux();
 		out_demux[0].connectSrc(comb_alu, 0, 0);
-		out_demux[0].connectSrc(dst_ctrl_rot[0], 0, 1);
+		out_demux[0].connectSrc(cma_ctrl, 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
 			// heap-like organization of indexes
 			out_demux[(i-1)/2].connectDst((i+1)%2, out_demux[i], 0);
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
-			out_demux[i].connectSrc(dst_ctrl_rot[level], 0, 1);
+			out_demux[i].connectSrc(cma_ctrl, level, 1);
 		}
 		
 		// connecting registers

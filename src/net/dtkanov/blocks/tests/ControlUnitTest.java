@@ -795,6 +795,21 @@ public class ControlUnitTest {
 		assertTrue(cu.getMemoryAt(0b0000110010101010)==33);
 	}
 	
+	@Test
+	public void CMATest() {
+		int cur_pc = getPCValue();
+		// MVI A, 10101000b
+		moveToReg(0b111, 0b10101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// CMA
+		setOperationAndPropagete(0b00101111);
+		setValuesAndPropagete(0b10101010, 0b00001100);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b01010111);
+	}
+	
 	protected void moveToReg(int reg_code, int val) {
 		// MVI REG, VAL
 		in_op[0].setValue(false).propagate();
