@@ -89,6 +89,10 @@ public class ControlUnit extends Node {
 	private ANDNode is_mem_instr;
 	/** True if instruction loads from memory. */
 	private ANDNode is_mem_load;
+	/** True if instruction sores to memory. */
+	private ANDNode is_mem_store;
+	/** Registers pair selector (DE/BC). */
+	private MultiMux reg_pair_sel;
 	
 	public ControlUnit() {
 		super(null);
@@ -183,6 +187,9 @@ public class ControlUnit extends Node {
 		///////////////////////////////////////////////////////////////////////
 		initJumps();
 		///////////////////////////////////////////////////////////////////////
+		is_mem_load = new ANDNode();
+		is_mem_store = new ANDNode();
+		reg_pair_sel = new MultiMux(2*BITNESS);
 		alu = new ALU(BITNESS);// 8-bit ALU
 		// control byte
 		// TODO replace lookup with clever logic
@@ -210,6 +217,10 @@ public class ControlUnit extends Node {
 			
 			alu_lookup[0b11000010 + (i<<3)] = 0b0000111;// Jccc
 		}
+		alu_lookup[0b00001010] = 0b1010111;// LDAX => OP1
+		alu_lookup[0b00011010] = 0b1010111;// LDAX => OP1
+		alu_lookup[0b00000010] = 0b1010111;// STAX => OP1
+		alu_lookup[0b00010010] = 0b1010111;// STAX => OP1
 		alu_lookup[0b00111010] = 0b1110111;// LDA => OP1
 		alu_lookup[0b00110010] = 0b1110111;// STA => OP1
 		alu_lookup[0b00000000] = 0b0010111;// NOP
@@ -233,11 +244,8 @@ public class ControlUnit extends Node {
 		NORNode bits6_and_2 = new NORNode();
 		bits6_and_2.connectSrc(opNOPs[2], 0, 0);
 		bits6_and_2.connectSrc(opNOPs[6], 0, 1);
-		ANDNode bits5_and_1 = new ANDNode();
-		bits5_and_1.connectSrc(opNOPs[1], 0, 0);
-		bits5_and_1.connectSrc(opNOPs[5], 0, 1);
 		ANDNode comb_st_1 = new ANDNode();
-		comb_st_1.connectSrc(bits5_and_1, 0, 0);
+		comb_st_1.connectSrc(opNOPs[1], 0, 0);
 		comb_st_1.connectSrc(bits6_and_2, 0, 1);
 		is_mem_instr = new ANDNode();
 		is_mem_instr.connectSrc(bits7_and_0, 0, 0);
@@ -323,7 +331,6 @@ public class ControlUnit extends Node {
 		
 		/* If it is memory store operation, then use A as source. */
 		MultiOR mem_store_check = new MultiOR(REG_SEL_CNT);
-		ANDNode is_mem_store = new ANDNode();
 		NOTNode rev_4bit = new NOTNode();
 		rev_4bit.connectSrc(opNOPs[3], 0, 0);
 		is_mem_store.connectSrc(is_mem_instr, 0, 0);
@@ -364,13 +371,24 @@ public class ControlUnit extends Node {
 		temp_con.connectDst(0, alu, BITNESS);
 		/* If it is memory load operation, then use memory as source. */
 		MultiMux mem_reg_sel = new MultiMux(BITNESS);
-		is_mem_load = new ANDNode();
 		is_mem_load.connectSrc(is_mem_instr, 0, 0);
 		is_mem_load.connectSrc(opNOPs[3], 0, 1);
 		mem_reg_sel.connectSrc(is_mem_load, 0, 2*BITNESS);
+		/* Source could be data bytes or registers pair. */
+		reg_pair_sel.connectSrc(opNOPs[4], 0, 4*BITNESS);// 1 -> DE, 0 -> BC
+		MultiMux source_sel = new MultiMux(2*BITNESS);
+		source_sel.connectSrc(opNOPs[5], 0, 4*BITNESS);
 		for (int j = 0; j < BITNESS; j++) {
-			mem_ro.connectSrc(inNOPs_A[j], 0, j);
-			mem_ro.connectSrc(inNOPs_B[j], 0, j+BITNESS);
+			reg_pair_sel.connectSrc(E, j, j);
+			reg_pair_sel.connectSrc(C, j, j+2*BITNESS);
+			reg_pair_sel.connectSrc(D, j, j+BITNESS);
+			reg_pair_sel.connectSrc(B, j, j+3*BITNESS);
+			source_sel.connectSrc(inNOPs_A[j], 0, j);
+			source_sel.connectSrc(reg_pair_sel, j, j+2*BITNESS);
+			source_sel.connectSrc(inNOPs_B[j], 0, j+BITNESS);
+			source_sel.connectSrc(reg_pair_sel, j+BITNESS, j+3*BITNESS);
+			mem_ro.connectSrc(source_sel, j, j);
+			mem_ro.connectSrc(source_sel, j+BITNESS, j+BITNESS);
 			mem_reg_sel.connectSrc(mem_ro, j, j);
 			mem_reg_sel.connectSrc(ALU_in_mux_A[0], j, j+BITNESS);
 			mem_reg_sel.connectDst(j, alu, j);
@@ -454,6 +472,26 @@ public class ControlUnit extends Node {
 		cma_ctrl.connectSrc(is_cma, 0, 3);
 		cma_ctrl.connectSrc(is_cma, 0, 4);
 		cma_ctrl.connectSrc(is_cma, 0, 5);
+		// Also for some of load operations, we should use A as DST. 
+		MultiOR is_a_dst = new MultiOR(3);
+		for (int i = 0; i < 3; i++) {
+			is_a_dst.connectSrc(is_mem_load, 0, i+3);
+			is_a_dst.connectSrc(cma_ctrl, i, i);
+		}
+		/* For store operations memory should be a source. */
+		Node ctrl_mem[] = new Node[3];
+		ctrl_mem[0] = new ANDNode();
+		NOTNode neg_is_mem_store = new NOTNode();
+		neg_is_mem_store.connectSrc(is_mem_store, 0, 0);
+		ctrl_mem[0].connectSrc(neg_is_mem_store, 0, 0);
+		ctrl_mem[0].connectSrc(is_a_dst, 0, 1);
+		ctrl_mem[1] = new ORNode();
+		ctrl_mem[1].connectSrc(is_mem_store, 0, 0);
+		ctrl_mem[1].connectSrc(is_a_dst, 1, 1);
+		ctrl_mem[2] = new ORNode();
+		ctrl_mem[2].connectSrc(is_mem_store, 0, 0);
+		ctrl_mem[2].connectSrc(is_a_dst, 2, 1);
+		
 		
 		ANDNode comb_alu = new ANDNode();
 		comb_alu.connectSrc(is_alu_on, 0, 0);
@@ -461,14 +499,14 @@ public class ControlUnit extends Node {
 		out_demux = new DeMux[(1<<3) - 1];
 		out_demux[0] = new DeMux();
 		out_demux[0].connectSrc(comb_alu, 0, 0);
-		out_demux[0].connectSrc(cma_ctrl, 0, 1);
+		out_demux[0].connectSrc(ctrl_mem[0], 0, 1);
 		for (int i = 1; i < out_demux.length; i++) {
 			out_demux[i] = new DeMux();
 			// heap-like organization of indexes
 			out_demux[(i-1)/2].connectDst((i+1)%2, out_demux[i], 0);
 			// Adding small magic number to prevent rounding errors.
 			int level = (int)Math.floor(Math.log(i+1)/Math.log(2) + 1e-10);
-			out_demux[i].connectSrc(cma_ctrl, level, 1);
+			out_demux[i].connectSrc(ctrl_mem[level], 0, 1);
 		}
 		
 		// connecting registers
@@ -479,7 +517,6 @@ public class ControlUnit extends Node {
 		// 010
 		D.connectSrc(out_demux[out_demux.length-2], 1, BITNESS);
 		// 110
-		// TODO add H:L / inNOPs switch
 		mem.connectSrc(out_demux[out_demux.length-2], 0, 3*BITNESS);
 		// 001
 		C.connectSrc(out_demux[out_demux.length-3], 1, BITNESS);
@@ -524,9 +561,20 @@ public class ControlUnit extends Node {
 			PC.connectSrc(zero, 0, i + BITNESS);
 		}
 		// memory addressing
+		MultiMux addr_sel = new MultiMux(2*BITNESS);
+		NOTNode neg_bit5 = new NOTNode();
+		neg_bit5.connectSrc(opNOPs[5], 0, 0);
+		ANDNode is_reg_pair = new ANDNode();
+		is_reg_pair.connectSrc(neg_bit5, 0, 0);
+		is_reg_pair.connectSrc(is_mem_store, 0, 1);
+		addr_sel.connectSrc(is_reg_pair, 0, 4*BITNESS);
 		for (int i = 0; i < BITNESS; i++) {
-			mem.connectSrc(inNOPs_A[i], 0, i);
-			mem.connectSrc(inNOPs_B[i], 0, i+BITNESS);
+			addr_sel.connectSrc(reg_pair_sel, i, i);
+			addr_sel.connectSrc(reg_pair_sel, i+BITNESS, i+BITNESS);
+			addr_sel.connectSrc(inNOPs_A[i], 0, i+2*BITNESS);
+			addr_sel.connectSrc(inNOPs_B[i], 0, i+3*BITNESS);
+			mem.connectSrc(addr_sel, i, i);
+			mem.connectSrc(addr_sel, i+BITNESS, i+BITNESS);
 		}
 		// TODO prevent flags change for mov, inc, dec etc.
 		F.connectSrc(alu, BITNESS+ALU.C_FLAG_SHIFT, C_FLAG);

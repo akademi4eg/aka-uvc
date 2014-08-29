@@ -796,6 +796,52 @@ public class ControlUnitTest {
 	}
 	
 	@Test
+	public void LDAXTest() {
+		int cur_pc = getPCValue();
+		cu.loadToStorage(0b0000110010101010, (byte)34);
+		// MVI B, 00001100b
+		moveToReg(0b000, 0b00001100);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// MVI C, 10101010b
+		moveToReg(0b001, 0b0010101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// LDAX BC
+		setOperationAndPropagete(0b00001010);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 34);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==34);
+	}
+	
+	@Test
+	public void STAXTest() {
+		int cur_pc = getPCValue();
+		// MVI A, 10101000b
+		moveToReg(0b111, 0b10101000);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==0);
+		// MVI D, 00001100b
+		moveToReg(0b010, 0b00001100);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// MVI E, 10101010b
+		moveToReg(0b011, 0b0010101010);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// STAX D
+		setOperationAndPropagete(0b00010010);
+		setValuesAndPropagete(0, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		checkReg(REG_A, 0b10101000);
+		assertTrue(cu.getMemoryAt(0b0000110010101010)==(byte)0b10101000);
+	}
+	
+	@Test
 	public void CMATest() {
 		int cur_pc = getPCValue();
 		// MVI A, 10101000b
