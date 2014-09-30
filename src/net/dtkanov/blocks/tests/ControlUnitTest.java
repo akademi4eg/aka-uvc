@@ -856,6 +856,58 @@ public class ControlUnitTest {
 		checkReg(REG_A, 0b01010111);
 	}
 	
+	@Test
+	public void STCTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		// STC
+		setOperationAndPropagete(0b00110111);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		// STC
+		setOperationAndPropagete(0b00110111);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+	}
+	
+	@Test
+	public void CMCTest() {
+		int cur_pc = getPCValue();
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+		// CMC
+		setOperationAndPropagete(0b00111111);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==true);
+		// CMC
+		setOperationAndPropagete(0b00111111);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 1;
+		checkReg(-1, cur_pc);
+		assertTrue(cu.getFlag(ControlUnit.Z_FLAG)==false);
+		assertTrue(cu.getFlag(ControlUnit.C_FLAG)==false);
+	}
+	
 	protected void moveToReg(int reg_code, int val) {
 		// MVI REG, VAL
 		in_op[0].setValue(false).propagate();

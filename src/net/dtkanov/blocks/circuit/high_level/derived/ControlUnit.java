@@ -236,6 +236,8 @@ public class ControlUnit extends Node {
 		alu_lookup[0b00001111] = 0b1011110;// RRC => ROR
 		alu_lookup[0b11111110] = 0b0101001;// CPI => SUB
 		alu_lookup[0b00101111] = 0b1011100;// CPA => NOT
+		alu_lookup[0b00111111] = 0b0010111;// CMC
+		alu_lookup[0b00110111] = 0b0010111;// STC
 		alu_ctrl = new LookUp(BITNESS, alu_lookup);
 		///////////////////////////////////////////////////////////////////////
 		NORNode bits7_and_0 = new NORNode();
@@ -536,7 +538,23 @@ public class ControlUnit extends Node {
 		ORNode set_flags = new ORNode();
 		set_flags.connectSrc(is_cmp, 0, 0);
 		set_flags.connectSrc(comb_alu, 0, 1);
-		F.connectSrc(set_flags, 0, BITNESS);
+		// also enable flags for CPC & STC ops
+		Node is_c_op = new AllNode(7);
+		Node rev_7bit = new NOTNode();
+		rev_7bit.connectSrc(opNOPs[7], 0, 0);
+		Node rev_6bit = new NOTNode();
+		rev_6bit.connectSrc(opNOPs[6], 0, 0);
+		is_c_op.connectSrc(rev_7bit, 0, 0);
+		is_c_op.connectSrc(rev_6bit, 0, 1);
+		is_c_op.connectSrc(opNOPs[5], 0, 2);
+		is_c_op.connectSrc(opNOPs[4], 0, 3);
+		is_c_op.connectSrc(opNOPs[2], 0, 4);
+		is_c_op.connectSrc(opNOPs[1], 0, 5);
+		is_c_op.connectSrc(opNOPs[0], 0, 6);
+		ORNode set_flags_enh = new ORNode();
+		set_flags_enh.connectSrc(set_flags, 0, 0);
+		set_flags_enh.connectSrc(is_c_op, 0, 1);
+		F.connectSrc(set_flags_enh, 0, BITNESS);
 		
 		// connect ALU output
 		for (int i = 0; i < BITNESS; i++) {
@@ -577,10 +595,32 @@ public class ControlUnit extends Node {
 			mem.connectSrc(addr_sel, i+BITNESS, i+BITNESS);
 		}
 		// TODO prevent flags change for mov, inc, dec etc.
-		F.connectSrc(alu, BITNESS+ALU.C_FLAG_SHIFT, C_FLAG);
-		F.connectSrc(alu, BITNESS+ALU.Z_FLAG_SHIFT, Z_FLAG);
-		F.connectSrc(alu, BITNESS+ALU.S_FLAG_SHIFT, S_FLAG);
-		F.connectSrc(alu, BITNESS+ALU.P_FLAG_SHIFT, P_FLAG);
+		Mux not_c_flag_val = new Mux();
+		not_c_flag_val.connectSrc(F, C_FLAG, 0);
+		not_c_flag_val.connectSrc(opNOPs[3], 0, 1);
+		not_c_flag_val.connectSrc(opNOPs[3], 0, 2);
+		Node c_flag_val = new NOTNode();
+		c_flag_val.connectSrc(not_c_flag_val, 0, 0);
+		Mux c_flag_src = new Mux();
+		c_flag_src.connectSrc(c_flag_val, 0, 0);
+		c_flag_src.connectSrc(alu, BITNESS+ALU.C_FLAG_SHIFT, 1);
+		c_flag_src.connectSrc(is_c_op, 0, 2);
+		F.connectSrc(c_flag_src, 0, C_FLAG);
+		Mux z_flag_src = new Mux();
+		z_flag_src.connectSrc(F, Z_FLAG, 0);
+		z_flag_src.connectSrc(alu, BITNESS+ALU.Z_FLAG_SHIFT, 1);
+		z_flag_src.connectSrc(is_c_op, 0, 2);
+		F.connectSrc(z_flag_src, 0, Z_FLAG);
+		Mux s_flag_src = new Mux();
+		s_flag_src.connectSrc(F, S_FLAG, 0);
+		s_flag_src.connectSrc(alu, BITNESS+ALU.S_FLAG_SHIFT, 1);
+		s_flag_src.connectSrc(is_c_op, 0, 2);
+		F.connectSrc(s_flag_src, 0, S_FLAG);
+		Mux p_flag_src = new Mux();
+		p_flag_src.connectSrc(F, P_FLAG, 0);
+		p_flag_src.connectSrc(alu, BITNESS+ALU.P_FLAG_SHIFT, 1);
+		p_flag_src.connectSrc(is_c_op, 0, 2);
+		F.connectSrc(p_flag_src, 0, P_FLAG);
 		// TODO implement A-flag (H-flag)
 		F.connectSrc(clock, 0, H_FLAG);
 		F.connectSrc(clock, 0, I_FLAG);
