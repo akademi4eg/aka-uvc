@@ -10,6 +10,11 @@ public class NOTNode extends Node {
 		super(null);
 	}
 	
+	public NOTNode(Node op, int port) {
+		this();
+		connectSrc(op, port, 0);
+	}
+	
 	@Override
 	public void reset() {
 		state = false;

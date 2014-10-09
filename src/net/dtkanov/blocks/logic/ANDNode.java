@@ -9,6 +9,12 @@ public class ANDNode extends Node {
 	public ANDNode() {
 		super(null);
 	}
+	
+	public ANDNode(Node op1, int port1, Node op2, int port2) {
+		this();
+		connectSrc(op1, port1, 0);
+		connectSrc(op2, port2, 1);
+	}
 
 	public void reset() {
 		if (state == null)

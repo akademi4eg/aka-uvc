@@ -20,6 +20,12 @@ public class ORNode extends Node {
 		inNOT[1] = new NOTNode().connectDst(0, andNode, 1);
 		outNOT = new NOTNode().connectSrc(andNode, 0, 0);
 	}
+	
+	public ORNode(Node op1, int port1, Node op2, int port2) {
+		this();
+		connectSrc(op1, port1, 0);
+		connectSrc(op2, port2, 1);
+	}
 
 	@Override
 	public Node in(int index, boolean value) {
