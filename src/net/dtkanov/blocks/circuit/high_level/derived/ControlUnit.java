@@ -225,6 +225,7 @@ public class ControlUnit extends Node {
 		alu_lookup[0b00110010] = 0b1110111;// STA => OP1
 		alu_lookup[0b00000000] = 0b0010111;// NOP
 		alu_lookup[0b11000011] = 0b0000111;// JMP
+		alu_lookup[0b11101001] = 0b0000111;// PCHL
 		alu_lookup[0b11000110] = 0b1100001;// ADI => ADD
 		alu_lookup[0b11001110] = 0b1100001;// ACI => ADD
 		alu_lookup[0b11010110] = 0b1101001;// SUI => SUB
@@ -254,19 +255,25 @@ public class ControlUnit extends Node {
 		is_mem_instr.connectSrc(comb_st_1, 0, 1);
 		///////////////////////////////////////////////////////////////////////
 		pc_ctrl = new PCRegController(PC);
-		for (int i = 0; i < BITNESS; i++) {
-			pc_ctrl.connectSrc(inNOPs_A[i], 0, i);
-			pc_ctrl.connectSrc(inNOPs_B[i], 0, i + BITNESS);
-		}
 		// lowest bit of opcode = 0 => conditional jump
-		is_not_jump = new ORNode();
-		is_not_jump.connectSrc(alu_ctrl, 4, 0);
-		is_not_jump.connectSrc(alu_ctrl, 5, 1);
+		is_not_jump = new ORNode(alu_ctrl, 4, alu_ctrl, 5);
 		NOTNode neg_is_cond = new NOTNode();
 		neg_is_cond.connectSrc(opNOPs[0], 0, 0);// true when conditional jump
-		ANDNode skip_jump = new ANDNode();
-		skip_jump.connectSrc(neg_is_cond, 0, 0);
-		skip_jump.connectSrc(not_jump_cond, 0, 1);
+		AllNode is_pchl = new AllNode(BITNESS);
+		NOTNode rev1_bit = new NOTNode(opNOPs[1], 0);
+		NOTNode rev2_bit = new NOTNode(opNOPs[2], 0);
+		NOTNode rev4_bit = new NOTNode(opNOPs[4], 0);
+		is_pchl.connectSrc(opNOPs[0], 0, 0);
+		is_pchl.connectSrc(rev1_bit, 0, 1);
+		is_pchl.connectSrc(rev2_bit, 0, 2);
+		is_pchl.connectSrc(opNOPs[3], 0, 3);
+		is_pchl.connectSrc(rev4_bit, 0, 4);
+		is_pchl.connectSrc(opNOPs[5], 0, 5);
+		is_pchl.connectSrc(opNOPs[6], 0, 6);
+		is_pchl.connectSrc(opNOPs[7], 0, 7);
+		ANDNode skip_jump = new ANDNode(new ANDNode(neg_is_cond, 0,
+													new NOTNode(is_pchl, 0), 0), 0,
+										not_jump_cond, 0);
 		Mux jumper = new Mux();
 		jumper.connectSrc(is_not_jump, 0, 2);
 		jumper.connectSrc(alu_ctrl, 4, 0);
@@ -278,6 +285,18 @@ public class ControlUnit extends Node {
 		jumper.connectSrc(skip_jump, 0, 1);
 		pc_ctrl.connectSrc(jumper, 0, BITNESS*2 + 1);
 		pc_ctrl.connectSrc(clock, 0, BITNESS*2 + 2);
+		MultiMux pc_src_low = new MultiMux(BITNESS);
+		pc_src_low.connectSrc(is_pchl, 0, 2*BITNESS);
+		MultiMux pc_src_high = new MultiMux(BITNESS);
+		pc_src_high.connectSrc(is_pchl, 0, 2*BITNESS);
+		for (int i = 0; i < BITNESS; i++) {
+			pc_src_low.connectSrc(L, i, i);
+			pc_src_low.connectSrc(inNOPs_A[i], 0, i+BITNESS);
+			pc_src_high.connectSrc(H, i, i);
+			pc_src_high.connectSrc(inNOPs_B[i], 0, i+BITNESS);
+			pc_ctrl.connectSrc(pc_src_low, i, i);
+			pc_ctrl.connectSrc(pc_src_high, i, i + BITNESS);
+		}
 		///////////////////////////////////////////////////////////////////////
 		is_alu_on = new NOPNode();
 		is_alu_on.connectSrc(alu_ctrl, 6, 0);
@@ -308,6 +327,7 @@ public class ControlUnit extends Node {
 	
 	private void initInputFromRegisters() {
 		final int REG_SEL_CNT = 3;
+		// FIXME fix indirect addressing (aka 110-register)
 		// Control byte format: xxDDDSSS or CCCCCSSS.
 		// Also 00DDD10X means inc/dec, so DDD==SSS.
 		/* Briefly: this code checks if opNOPs pattern

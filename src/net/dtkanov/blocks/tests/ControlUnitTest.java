@@ -84,6 +84,29 @@ public class ControlUnitTest {
 	}
 	
 	@Test
+	public void PCHLTest() {
+		int cur_pc = getPCValue();
+		// MVI H, 01001011b
+		moveToReg(REG_H, 0b01001011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// ADI 00100111b
+		setOperationAndPropagete(0b11000110);
+		setValuesAndPropagete(0b00100111, 0);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// MVI B, 01101011b
+		moveToReg(REG_L, 0b01101011);
+		cur_pc += 2;
+		checkReg(-1, cur_pc);
+		// PCHL
+		setOperationAndPropagete(0b11101001);
+		setValuesAndPropagete(0b01010101, 0b01001011);
+		cur_pc = 0b0100101101101011;
+		checkReg(-1, cur_pc);
+	}
+	
+	@Test
 	public void JNZTest() {
 		int cur_pc = getPCValue();
 		// ADI 00100111b
